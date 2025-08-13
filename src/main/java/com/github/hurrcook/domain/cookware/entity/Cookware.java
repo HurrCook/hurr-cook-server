@@ -15,7 +15,7 @@ import lombok.*;
 public class Cookware extends BaseSchema {
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     @Column(nullable = false)
