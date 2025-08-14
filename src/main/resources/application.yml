@@ -12,3 +12,8 @@ spring:
         format-sql: true
     hibernate:
       ddl-auto: update
+
+app:
+  jwt:
+    key: ${JWT_SECRET_KEY}
+    token-expiration-hours: 24
