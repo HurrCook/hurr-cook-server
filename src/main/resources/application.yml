@@ -15,5 +15,5 @@ spring:
 
 app:
   jwt:
-    key: ${JWT_SECRET_KEY}
-    token-expiration-hours: 24
+    secret-key: ${JWT_SECRET_KEY}
+    expiration: 24
