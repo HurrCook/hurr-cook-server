@@ -1,4 +1,4 @@
-package com.github.hurrcook.global.security;
+package com.github.hurrcook.global.config;
 
 import com.github.hurrcook.global.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
