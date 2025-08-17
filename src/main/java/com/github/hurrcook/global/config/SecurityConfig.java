@@ -1,5 +1,6 @@
 package com.github.hurrcook.global.config;
 
+import com.github.hurrcook.global.security.authentication.CustomAuthenticationEntryPoint;
 import com.github.hurrcook.global.security.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtFilter jwtFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -32,7 +34,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+
+                .exceptionHandling(e-> e
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                );
 
         return http.build();
     }
