@@ -18,27 +18,35 @@ public class Cookware extends BaseSchema {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
+    @Builder.Default
     @Column(nullable = false)
-    private boolean hasPot;
+    private boolean hasPot = false;
 
+    @Builder.Default
     @Column(nullable = false)
-    private boolean hasPan;
+    private boolean hasPan = false;
 
+    @Builder.Default
     @Column(nullable = false)
-    private boolean hasCooker;
+    private boolean hasCooker = false;
 
+    @Builder.Default
     @Column(nullable = false)
-    private boolean hasSteamer;
+    private boolean hasSteamer = false;
 
+    @Builder.Default
     @Column(nullable = false)
-    private boolean hasOven;
+    private boolean hasOven = false;
 
+    @Builder.Default
     @Column(nullable = false)
-    private boolean hasMicro;
+    private boolean hasMicro = false;
 
+    @Builder.Default
     @Column(nullable = false)
-    private boolean hasToaster;
+    private boolean hasToaster = false;
 
+    @Builder.Default
     @Column(nullable = false)
-    private boolean hasAirFryer;
+    private boolean hasAirFryer = false;
 }
