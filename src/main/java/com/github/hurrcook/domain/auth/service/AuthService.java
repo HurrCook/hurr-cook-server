@@ -4,6 +4,10 @@ import com.github.hurrcook.domain.auth.dto.response.KakaoTokenResponse;
 import com.github.hurrcook.domain.auth.dto.response.KakaoUserInfoResponse;
 import com.github.hurrcook.domain.auth.dto.response.TokenResponse;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
+import com.github.hurrcook.domain.cookware.entity.Cookware;
+import com.github.hurrcook.domain.user.entity.User;
+import com.github.hurrcook.domain.user.repository.UserRepository;
+import com.github.hurrcook.global.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -16,7 +20,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    private final JwtUtil jwtUtil;
     private final RestTemplate restTemplate;
+    private final UserRepository userRepository;
 
     @Value("${app.oauth.kakao.client-id}")
     private String clientId;
@@ -49,8 +55,8 @@ public class AuthService {
         KakaoTokenResponse kakaoTokenResponse = getTokenFromKakao(authorizeCode);
         // 토큰으로 유저 정보 받음
         KakaoUserInfoResponse kakaoUserInfoResponse = getUserInfoFromKakao(kakaoTokenResponse.accessToken());
-
-        //TODO: 사용자 로그인 처리
+        // 사용자 로그인 (최초 시 회원가입)
+        User user = login(kakaoUserInfoResponse);
 
         return new TokenResponse(kakaoTokenResponse.accessToken(), kakaoTokenResponse.refreshToken());
     }
@@ -58,6 +64,27 @@ public class AuthService {
 
 
     /*          내부 메서드          */
+
+    /* 서비스 회원가입/로그인 처리 */
+    private User login(KakaoUserInfoResponse kakaoUserInfoResponse){
+        Long kakaoId = kakaoUserInfoResponse.id();
+
+        return userRepository.findByKakaoId(kakaoId) // 유저가 있으면 로그인 처리
+                .orElseGet(()-> { // 비어있으면 회원가입 처리
+                    User user = User.builder()
+                            .kakaoId(kakaoId)
+                            .nickname(kakaoUserInfoResponse.kakaoAccount().profile().nickname())
+                            .build();
+
+                    // 조리도구 엔티티 생성 및 유저 엔티티 관계 설정
+                    Cookware cookware = Cookware.builder().build();
+                    user.setCookware(cookware);
+                    cookware.setUser(user);
+
+                    return userRepository.save(user);
+                });
+
+    }
 
 
     /* 카카오 서버에 토큰 발급 요청 */
