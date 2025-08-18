@@ -1,6 +1,7 @@
 package com.github.hurrcook.domain.auth.service;
 
 import com.github.hurrcook.domain.auth.dto.response.KakaoTokenResponse;
+import com.github.hurrcook.domain.auth.dto.response.KakaoUserInfoResponse;
 import com.github.hurrcook.domain.auth.dto.response.TokenResponse;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,11 @@ public class AuthService {
 
     private final String KAKAO_AUTH_URL = "https://kauth.kakao.com/oauth/authorize";
     private final String KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
+    private final String KAKAO_USER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
 
 
 
-    // 로그인 페이지로의 리다이렉트 Url 반환
+    /* 로그인 페이지로의 리다이렉트 Url 반환 */
     public String getKakaoLoginUrl(){
         return UriComponentsBuilder.fromHttpUrl(KAKAO_AUTH_URL)
                 .queryParam("client_id", clientId)
@@ -41,10 +43,12 @@ public class AuthService {
     }
 
 
-    // 인가 코드로 토큰 발급 및 사용자 로그인 처리
+    /* 인가 코드로 토큰 발급 및 사용자 로그인 처리 */
     public TokenResponse kakaoLogin(String authorizeCode){
-
-        KakaoTokenResponse kakaoTokenResponse = getTokenFromKakao(authorizeCode); // 카카오로부터 토큰 발급 받음
+        // 카카오로부터 토큰 발급 받음
+        KakaoTokenResponse kakaoTokenResponse = getTokenFromKakao(authorizeCode);
+        // 토큰으로 유저 정보 받음
+        KakaoUserInfoResponse kakaoUserInfoResponse = getUserInfoFromKakao(kakaoTokenResponse.accessToken());
 
         //TODO: 사용자 로그인 처리
 
@@ -53,10 +57,10 @@ public class AuthService {
 
 
 
-    /* 내부 메서드 */
+    /*          내부 메서드          */
 
 
-    // 카카오 서버에 토큰 발급 요청
+    /* 카카오 서버에 토큰 발급 요청 */
     private KakaoTokenResponse getTokenFromKakao(String authorizeCode){
 
         // header 생성 및 설정
@@ -89,5 +93,28 @@ public class AuthService {
         }
     }
 
+
+    /* 카카오 서버에 사용자 정보 요청 */
+    private KakaoUserInfoResponse getUserInfoFromKakao(String accessToken){
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
+
+        // 헤더에 토큰 담아 GET 요청 시도
+        try {
+            ResponseEntity<KakaoUserInfoResponse> response = restTemplate.exchange(
+                    KAKAO_USER_INFO_URL, HttpMethod.GET, request, KakaoUserInfoResponse.class);
+
+            if (response.getStatusCode()== HttpStatus.OK){
+                return response.getBody();
+            } else {
+                throw AuthExceptions.KAKAO_USERINFO_REQUEST_FAILED.toApiException();
+            }
+        } catch (Exception e) {
+            throw AuthExceptions.KAKAO_USERINFO_REQUEST_FAILED.toApiException();
+        }
+    }
 
 }
