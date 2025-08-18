@@ -20,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AuthService {
     private final JwtUtil jwtUtil;
     private final RestTemplate restTemplate;
@@ -42,6 +41,7 @@ public class AuthService {
 
 
     /* 로그인 페이지로의 리다이렉트 Url 반환 */
+    @Transactional(readOnly = true)
     public String getKakaoLoginUrl(){
         return UriComponentsBuilder.fromHttpUrl(KAKAO_AUTH_URL)
                 .queryParam("client_id", clientId)
@@ -52,6 +52,7 @@ public class AuthService {
 
 
     /* 인가 코드로 토큰 발급 및 사용자 로그인 처리 */
+    @Transactional
     public TokenResponse kakaoLogin(String authorizeCode){
         // 카카오로부터 토큰 발급 받음
         KakaoTokenResponse kakaoTokenResponse = getTokenFromKakao(authorizeCode);
@@ -81,7 +82,7 @@ public class AuthService {
                 .map(existingUser-> { // 유저가 있으면 로그인 처리, 변경 사항을 업데이트
                     existingUser.setNickname(nickname);
 
-                    return userRepository.save(existingUser);
+                    return existingUser;
                 })
                 .orElseGet(()-> { // 비어있으면 회원가입 처리
                     User user = User.builder()

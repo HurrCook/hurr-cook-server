@@ -4,7 +4,9 @@ import com.github.hurrcook.domain.auth.dto.response.TokenResponse;
 import com.github.hurrcook.domain.auth.service.AuthService;
 import com.github.hurrcook.global.response.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Validated
 public class AuthController {
     private final AuthService authService;
 
@@ -22,8 +25,8 @@ public class AuthController {
 //        return ApiResponse.ok();
     }
 
-    @PostMapping("/kakao/callback") // 사용자 인증 후 쿼리 파라미터에 인가 코드를 담아 callback 되어 토큰 발급 요청
-    public ApiResponse<TokenResponse> callback(@RequestParam("code") String authorizeCode) {
+    @GetMapping("/kakao/callback") // 사용자 인증 후 쿼리 파라미터에 인가 코드를 담아 callback 되어 토큰 발급 요청
+    public ApiResponse<TokenResponse> callback(@RequestParam("code") @NotBlank String authorizeCode) {
         return ApiResponse.ok(authService.kakaoLogin(authorizeCode));
     }
 }
