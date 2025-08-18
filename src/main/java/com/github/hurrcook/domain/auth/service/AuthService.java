@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -19,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
     private final JwtUtil jwtUtil;
     private final RestTemplate restTemplate;
@@ -73,12 +75,18 @@ public class AuthService {
     /* 서비스 회원가입/로그인 처리 */
     private User login(KakaoUserInfoResponse kakaoUserInfoResponse){
         Long kakaoId = kakaoUserInfoResponse.id();
+        String nickname = kakaoUserInfoResponse.kakaoAccount().profile().nickname();
 
-        return userRepository.findByKakaoId(kakaoId) // 유저가 있으면 로그인 처리
+        return userRepository.findByKakaoId(kakaoId)
+                .map(existingUser-> { // 유저가 있으면 로그인 처리, 변경 사항을 업데이트
+                    existingUser.setNickname(nickname);
+
+                    return userRepository.save(existingUser);
+                })
                 .orElseGet(()-> { // 비어있으면 회원가입 처리
                     User user = User.builder()
                             .kakaoId(kakaoId)
-                            .nickname(kakaoUserInfoResponse.kakaoAccount().profile().nickname())
+                            .nickname(nickname)
                             .build();
 
                     // 조리도구 엔티티 생성 및 유저 엔티티 관계 설정
