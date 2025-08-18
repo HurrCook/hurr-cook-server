@@ -58,7 +58,12 @@ public class AuthService {
         // 사용자 로그인 (최초 시 회원가입)
         User user = login(kakaoUserInfoResponse);
 
-        return new TokenResponse(kakaoTokenResponse.accessToken(), kakaoTokenResponse.refreshToken());
+        // JWT 토큰 생성
+        //TODO: 리프레시 토큰 관련 추가 후 반환 값에 반영
+        String accessToken = jwtUtil.createToken(user);
+//        String refreshToken = jwtUtil.
+
+        return TokenResponse.from(kakaoTokenResponse.accessToken(), kakaoTokenResponse.refreshToken());
     }
 
 
