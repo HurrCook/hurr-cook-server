@@ -13,8 +13,14 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseSchema {
 
+    @Column(unique = true, nullable = false)
+    private Long kakaoId;
+
     @Column(nullable = false)
-    String name;
+    String nickname; // 카카오 프로필 이름
+
+//    @Column(nullable = false)
+//    String name;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Cookware cookware;
