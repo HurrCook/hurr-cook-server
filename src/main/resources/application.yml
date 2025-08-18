@@ -14,3 +14,9 @@ app:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
     expiration: 24
+
+  oauth:
+    kakao:
+      client-id: ${REST_API_KEY}
+      client-secret: ${CLIENT_SECRET}
+      redirect-uri: ${REDIRECT_URI}
