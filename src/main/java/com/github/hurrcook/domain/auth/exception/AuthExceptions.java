@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 public enum AuthExceptions implements ApiExceptions {
 
     ACCESS_TOKEN_EXPIRED("엑세스 토큰이 만료되었습니다"),
-    AUTHENTICATION_FAILED("인증에 실패했습니다.");
+    AUTHENTICATION_FAILED("인증에 실패했습니다."),
+    KAKAO_TOKEN_ISSUE_FAILED("카카오 토큰 발급에 실패했습니다.");
 
 
     private final String message;
