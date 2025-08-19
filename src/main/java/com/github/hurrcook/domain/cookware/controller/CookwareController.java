@@ -1,5 +1,6 @@
 package com.github.hurrcook.domain.cookware.controller;
 
+import com.github.hurrcook.domain.cookware.dto.request.CookwareRequest;
 import com.github.hurrcook.domain.cookware.dto.response.CookwareResponse;
 import com.github.hurrcook.domain.cookware.service.CookwareService;
 import lombok.RequiredArgsConstructor;
@@ -23,4 +24,10 @@ public class CookwareController {
         return ResponseEntity.ok(cookwareResponse);
     }
 
+    @PostMapping("/cookwares")
+    public void saveCookware(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody CookwareRequest cookwareRequest) {
+
+        UUID userId = userDetails.getUserId();
+        cookwareService.saveCookware(userId, cookwareRequest);
+    }
 }
