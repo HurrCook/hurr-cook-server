@@ -80,14 +80,14 @@ public class AuthService {
 
         return userRepository.findByKakaoId(kakaoId)
                 .map(existingUser-> { // 유저가 있으면 로그인 처리, 변경 사항을 업데이트
-                    existingUser.setNickname(nickname);
+                    existingUser.setName(nickname);
 
                     return existingUser;
                 })
                 .orElseGet(()-> { // 비어있으면 회원가입 처리
                     User user = User.builder()
                             .kakaoId(kakaoId)
-                            .nickname(nickname)
+                            .name(nickname)
                             .build();
 
                     // 조리도구 엔티티 생성 및 유저 엔티티 관계 설정

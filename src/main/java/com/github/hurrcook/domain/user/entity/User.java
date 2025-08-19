@@ -17,10 +17,7 @@ public class User extends BaseSchema {
     private Long kakaoId;
 
     @Column(nullable = false)
-    String nickname; // 카카오 프로필 이름
-
-//    @Column(nullable = false)
-//    String name;
+    String name; // 카카오 프로필 이름
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Cookware cookware;
