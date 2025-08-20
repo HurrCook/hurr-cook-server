@@ -1,5 +1,6 @@
 package com.github.hurrcook.domain.cookware.entity;
 
+import com.github.hurrcook.domain.cookware.dto.request.CookwareRequest;
 import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.global.infra.BaseSchema;
 import jakarta.persistence.*;
@@ -41,4 +42,15 @@ public class Cookware extends BaseSchema {
 
     @Column(nullable = false)
     @Builder.Default private boolean hasAirFryer = false;
+
+    public void updateCookwareFromRequest(CookwareRequest request) {
+        this.hasPot = request.isHasPot();
+        this.hasPan = request.isHasPan();
+        this.hasCooker = request.isHasCooker();
+        this.hasSteamer = request.isHasSteamer();
+        this.hasOven = request.isHasOven();
+        this.hasMicro = request.isHasMicro();
+        this.hasToaster = request.isHasToaster();
+        this.hasAirFryer = request.isHasAirFryer();
+    }
 }

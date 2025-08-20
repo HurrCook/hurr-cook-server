@@ -36,13 +36,6 @@ public class CookwareService {
 
         Cookware cookware = user.getCookware();
 
-        cookware.setHasPot(cookwareRequest.isHasPot());
-        cookware.setHasPan(cookwareRequest.isHasPan());
-        cookware.setHasCooker(cookwareRequest.isHasCooker());
-        cookware.setHasSteamer(cookwareRequest.isHasSteamer());
-        cookware.setHasOven(cookwareRequest.isHasOven());
-        cookware.setHasMicro(cookwareRequest.isHasMicro());
-        cookware.setHasToaster(cookwareRequest.isHasToaster());
-        cookware.setHasAirFryer(cookwareRequest.isHasAirFryer());
+        cookware.updateCookwareFromRequest(cookwareRequest);
     }
 }
