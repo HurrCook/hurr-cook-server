@@ -9,9 +9,11 @@ import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CookwareService {
 
     private final CookwareRepository cookwareRepository;
