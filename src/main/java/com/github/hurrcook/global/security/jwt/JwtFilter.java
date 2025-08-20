@@ -50,9 +50,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 authentication.setAuthenticated(true);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            }else{
-
-                throw AuthExceptions.AUTHENTICATION_FAILED.toApiException();
             }
         }catch (ApiException e){
 
