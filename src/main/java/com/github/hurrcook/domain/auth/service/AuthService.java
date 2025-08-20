@@ -2,7 +2,7 @@ package com.github.hurrcook.domain.auth.service;
 
 import com.github.hurrcook.domain.auth.dto.response.KakaoTokenResponse;
 import com.github.hurrcook.domain.auth.dto.response.KakaoUserInfoResponse;
-import com.github.hurrcook.domain.auth.dto.response.TokenResponse;
+import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
 import com.github.hurrcook.domain.cookware.entity.Cookware;
 import com.github.hurrcook.domain.user.entity.User;
@@ -53,7 +53,7 @@ public class AuthService {
 
     /* 인가 코드로 토큰 발급 및 사용자 로그인 처리 */
     @Transactional
-    public TokenResponse kakaoLogin(String authorizeCode){
+    public LoginResponse kakaoLogin(String authorizeCode){
         // 카카오로부터 토큰 발급 받음
         KakaoTokenResponse kakaoTokenResponse = getTokenFromKakao(authorizeCode);
         // 토큰으로 유저 정보 받음
@@ -64,9 +64,9 @@ public class AuthService {
         // JWT 토큰 생성
         //TODO: 리프레시 토큰 관련 추가 후 반환 값에 반영
         String accessToken = jwtUtil.createToken(user);
-//        String refreshToken = jwtUtil.
+//      String refreshToken = jwtUtil.
 
-        return TokenResponse.of(kakaoTokenResponse.getAccessToken(), kakaoTokenResponse.getRefreshToken());
+        return LoginResponse.of(user.getId(),user.getName(),accessToken, kakaoTokenResponse.getRefreshToken());
     }
 
 

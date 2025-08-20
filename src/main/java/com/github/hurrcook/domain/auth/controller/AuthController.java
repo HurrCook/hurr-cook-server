@@ -1,6 +1,6 @@
 package com.github.hurrcook.domain.auth.controller;
 
-import com.github.hurrcook.domain.auth.dto.response.TokenResponse;
+import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
 import com.github.hurrcook.domain.auth.service.AuthService;
 import com.github.hurrcook.global.response.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,7 +26,7 @@ public class AuthController {
     }
 
     @GetMapping("/kakao/callback") // 사용자 인증 후 쿼리 파라미터에 인가 코드를 담아 callback 되어 토큰 발급 요청
-    public ApiResponse<TokenResponse> callback(@RequestParam("code") @NotBlank String authorizeCode) {
+    public ApiResponse<LoginResponse> callback(@RequestParam("code") @NotBlank String authorizeCode) {
         return ApiResponse.ok(authService.kakaoLogin(authorizeCode));
     }
 }
