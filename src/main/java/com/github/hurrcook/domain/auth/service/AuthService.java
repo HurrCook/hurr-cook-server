@@ -57,7 +57,7 @@ public class AuthService {
         // 카카오로부터 토큰 발급 받음
         KakaoTokenResponse kakaoTokenResponse = getTokenFromKakao(authorizeCode);
         // 토큰으로 유저 정보 받음
-        KakaoUserInfoResponse kakaoUserInfoResponse = getUserInfoFromKakao(kakaoTokenResponse.accessToken());
+        KakaoUserInfoResponse kakaoUserInfoResponse = getUserInfoFromKakao(kakaoTokenResponse.getAccessToken());
         // 사용자 로그인 (최초 시 회원가입)
         User user = login(kakaoUserInfoResponse);
 
@@ -66,7 +66,7 @@ public class AuthService {
         String accessToken = jwtUtil.createToken(user);
 //        String refreshToken = jwtUtil.
 
-        return TokenResponse.from(kakaoTokenResponse.accessToken(), kakaoTokenResponse.refreshToken());
+        return TokenResponse.of(kakaoTokenResponse.getAccessToken(), kakaoTokenResponse.getRefreshToken());
     }
 
 
@@ -75,8 +75,8 @@ public class AuthService {
 
     /* 서비스 회원가입/로그인 처리 */
     private User login(KakaoUserInfoResponse kakaoUserInfoResponse){
-        Long kakaoId = kakaoUserInfoResponse.id();
-        String nickname = kakaoUserInfoResponse.kakaoAccount().profile().nickname();
+        Long kakaoId = kakaoUserInfoResponse.getId();
+        String nickname = kakaoUserInfoResponse.getKakaoAccount().getProfile().getNickname();
 
         return userRepository.findByKakaoId(kakaoId)
                 .map(existingUser-> { // 유저가 있으면 로그인 처리, 변경 사항을 업데이트
