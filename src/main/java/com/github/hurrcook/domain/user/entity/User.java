@@ -4,6 +4,7 @@ import com.github.hurrcook.domain.cookware.entity.Cookware;
 import com.github.hurrcook.global.infra.BaseSchema;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Data
@@ -11,6 +12,7 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "users")
 public class User extends BaseSchema {
 
     @Column(unique = true, nullable = false)

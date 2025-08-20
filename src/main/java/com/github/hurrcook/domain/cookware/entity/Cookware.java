@@ -12,6 +12,7 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "cookwares")
 public class Cookware extends BaseSchema {
 
     @OneToOne(fetch = FetchType.LAZY)
