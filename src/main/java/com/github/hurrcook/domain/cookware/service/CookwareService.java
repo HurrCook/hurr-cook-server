@@ -6,33 +6,25 @@ import com.github.hurrcook.domain.cookware.entity.Cookware;
 import com.github.hurrcook.domain.cookware.exception.CookwareException;
 import com.github.hurrcook.domain.cookware.repository.CookwareRepository;
 import com.github.hurrcook.domain.user.entity.User;
-import com.github.hurrcook.domain.user.exception.UserExceptions;
-import com.github.hurrcook.domain.user.repository.UserRepository;
 import com.github.hurrcook.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class CookwareService {
 
-    private final UserRepository userRepository;
     private final CookwareRepository cookwareRepository;
 
-    public CookwareResponse getCookwareByUserId(UUID userId) {
+    public CookwareResponse getCookwareByUser(User user) {
 
-        Cookware cookware = cookwareRepository.findByUserId(userId)
+        Cookware cookware = cookwareRepository.findByUser(user)
                 .orElseThrow(() -> new ApiException(CookwareException.COOKWARE_NOT_FOUND));
 
         return CookwareResponse.from(cookware);
     }
 
-    public void saveCookware(UUID userId, CookwareRequest cookwareRequest) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(UserExceptions.USER_NOT_FOUND));
+    public void saveCookware(User user, CookwareRequest cookwareRequest) {
 
         Cookware cookware = user.getCookware();
 
