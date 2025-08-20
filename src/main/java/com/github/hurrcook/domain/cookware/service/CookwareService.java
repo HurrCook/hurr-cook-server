@@ -26,16 +26,7 @@ public class CookwareService {
         Cookware cookware = cookwareRepository.findByUserId(userId)
                 .orElseThrow(() -> new ApiException(CookwareException.COOKWARE_NOT_FOUND));
 
-        return CookwareResponse.builder()
-                .hasPot(cookware.isHasPot())
-                .hasPan(cookware.isHasPan())
-                .hasCooker(cookware.isHasCooker())
-                .hasSteamer(cookware.isHasSteamer())
-                .hasOven(cookware.isHasOven())
-                .hasMicro(cookware.isHasMicro())
-                .hasToaster(cookware.isHasToaster())
-                .hasAirFryer(cookware.isHasAirFryer())
-                .build();
+        return CookwareResponse.from(cookware);
     }
 
     public void saveCookware(UUID userId, CookwareRequest cookwareRequest) {

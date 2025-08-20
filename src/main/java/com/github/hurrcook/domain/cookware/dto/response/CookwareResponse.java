@@ -1,5 +1,6 @@
 package com.github.hurrcook.domain.cookware.dto.response;
 
+import com.github.hurrcook.domain.cookware.entity.Cookware;
 import lombok.Builder;
 import lombok.Data;
 
@@ -22,4 +23,17 @@ public class CookwareResponse {
     private boolean hasToaster;
 
     private boolean hasAirFryer;
+
+    public static CookwareResponse from(Cookware cookware) {
+        return CookwareResponse.builder()
+                .hasPot(cookware.isHasPot())
+                .hasPan(cookware.isHasPan())
+                .hasCooker(cookware.isHasCooker())
+                .hasSteamer(cookware.isHasSteamer())
+                .hasOven(cookware.isHasOven())
+                .hasMicro(cookware.isHasMicro())
+                .hasToaster(cookware.isHasToaster())
+                .hasAirFryer(cookware.isHasAirFryer())
+                .build();
+    }
 }
