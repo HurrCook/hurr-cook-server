@@ -84,19 +84,7 @@ public class AuthService {
 
                     return existingUser;
                 })
-                .orElseGet(()-> { // 비어있으면 회원가입 처리
-                    User user = User.builder()
-                            .kakaoId(kakaoId)
-                            .name(nickname)
-                            .build();
-
-                    // 조리도구 엔티티 생성 및 유저 엔티티 관계 설정
-                    Cookware cookware = Cookware.builder().build();
-                    user.setCookware(cookware);
-                    cookware.setUser(user);
-
-                    return userRepository.save(user);
-                });
+                .orElseGet(()-> of(kakaoId,nickname));
 
     }
 
@@ -156,6 +144,17 @@ public class AuthService {
         } catch (Exception e) {
             throw AuthExceptions.KAKAO_USERINFO_REQUEST_FAILED.toApiException();
         }
+    }
+    private User of(Long kakaoId, String name){
+        User user = User.builder()
+                .kakaoId(kakaoId)
+                .name(name)
+                .build();
+
+        Cookware cookware = Cookware.builder().user(user).build();
+        user.setCookware(cookware);
+
+        return userRepository.save(user);
     }
 
 }
