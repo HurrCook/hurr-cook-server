@@ -31,5 +31,7 @@ public class CookwareService {
         Cookware cookware = user.getCookware();
 
         cookware.updateCookwareFromRequest(cookwareRequest);
+
+        cookwareRepository.save(cookware);
     }
 }
