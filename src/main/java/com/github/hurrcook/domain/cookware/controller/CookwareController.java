@@ -4,6 +4,7 @@ import com.github.hurrcook.domain.cookware.dto.request.CookwareRequest;
 import com.github.hurrcook.domain.cookware.dto.response.CookwareResponse;
 import com.github.hurrcook.domain.cookware.service.CookwareService;
 import com.github.hurrcook.domain.user.entity.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +23,7 @@ public class CookwareController {
         return ResponseEntity.ok(cookwareResponse);
     }
 
+    @Valid
     @PostMapping("/cookwares")
     public void saveCookware(@AuthenticationPrincipal User user, @RequestBody CookwareRequest cookwareRequest) {
 
