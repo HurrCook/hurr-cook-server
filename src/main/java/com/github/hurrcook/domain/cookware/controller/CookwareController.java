@@ -23,9 +23,8 @@ public class CookwareController {
         return ResponseEntity.ok(cookwareResponse);
     }
 
-    @Valid
     @PostMapping("/cookwares")
-    public void saveCookware(@AuthenticationPrincipal User user, @RequestBody CookwareRequest cookwareRequest) {
+    public void saveCookware(@AuthenticationPrincipal User user, @RequestBody @Valid CookwareRequest cookwareRequest) {
 
         cookwareService.saveCookware(user, cookwareRequest);
     }
