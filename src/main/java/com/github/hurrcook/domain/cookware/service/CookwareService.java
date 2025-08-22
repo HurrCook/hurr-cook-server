@@ -19,9 +19,12 @@ public class CookwareService {
     public CookwareResponse getCookwareByUser(User user) {
 
         Cookware cookware = cookwareRepository.findByUser(user)
-                .orElse(Cookware.builder()
-                        .user(user)
-                        .build());
+                .orElseGet(() -> {
+                    Cookware newCookware = Cookware.builder()
+                            .user(user)
+                            .build();
+                    return cookwareRepository.save(newCookware);
+                });
 
         return CookwareResponse.from(cookware);
     }
