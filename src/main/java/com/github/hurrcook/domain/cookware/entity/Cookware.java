@@ -13,33 +13,42 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "cookwares")
 public class Cookware extends BaseSchema {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
+    @Builder.Default
     @Column(nullable = false)
     @Builder.Default private boolean hasPot = false;
 
+    @Builder.Default
     @Column(nullable = false)
     @Builder.Default private boolean hasPan = false;
 
+    @Builder.Default
     @Column(nullable = false)
     @Builder.Default private boolean hasCooker = false;
 
+    @Builder.Default
     @Column(nullable = false)
     @Builder.Default private boolean hasSteamer = false;
 
+    @Builder.Default
     @Column(nullable = false)
     @Builder.Default private boolean hasOven = false;
 
+    @Builder.Default
     @Column(nullable = false)
     @Builder.Default private boolean hasMicro = false;
 
+    @Builder.Default
     @Column(nullable = false)
     @Builder.Default private boolean hasToaster = false;
 
+    @Builder.Default
     @Column(nullable = false)
     @Builder.Default private boolean hasAirFryer = false;
 
