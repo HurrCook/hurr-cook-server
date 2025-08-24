@@ -17,15 +17,17 @@ public class CookwareController {
     private final CookwareService cookwareService;
 
     @GetMapping("/cookwares")
-    public ResponseEntity<CookwareResponse> getCookware(@AuthenticationPrincipal User user) {
+    public ApiResponse<CookwareResponse> getCookware(@AuthenticationPrincipal User user) {
 
         CookwareResponse cookwareResponse = cookwareService.getCookwareByUser(user);
-        return ResponseEntity.ok(cookwareResponse);
+        return ApiResponse.ok(cookwareResponse);
     }
 
     @PostMapping("/cookwares")
-    public void saveCookware(@AuthenticationPrincipal User user, @RequestBody @Valid CookwareRequest cookwareRequest) {
+    public ApiResponse<Void> saveCookware(@AuthenticationPrincipal User user, @RequestBody @Valid CookwareRequest cookwareRequest) {
 
         cookwareService.saveCookware(user, cookwareRequest);
+
+        return ApiResponse.ok();
     }
 }
