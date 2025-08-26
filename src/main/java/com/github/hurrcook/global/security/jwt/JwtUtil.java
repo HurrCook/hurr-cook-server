@@ -29,11 +29,18 @@ public class JwtUtil {
         return Algorithm.HMAC256(jwtProperty.getSecretKey());
     }
 
-    public String createToken(User user){
-
+    public String createAccessToken(User user){
         return JWT.create()
                 .withIssuedAt(Instant.now())
-                .withExpiresAt(Instant.now().plus(jwtProperty.getExpiration(), ChronoUnit.HOURS))
+                .withExpiresAt(Instant.now().plus(jwtProperty.getAccessExpiration(), ChronoUnit.HOURS))
+                .withClaim("id",user.getId().toString())
+                .sign(algorithm());
+    }
+
+    public String createRefreshToken(User user){
+        return JWT.create()
+                .withIssuedAt(Instant.now())
+                .withExpiresAt(Instant.now().plus(jwtProperty.getRefreshExpiration(), ChronoUnit.HOURS))
                 .withClaim("id",user.getId().toString())
                 .sign(algorithm());
     }
