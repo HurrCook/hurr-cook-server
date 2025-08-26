@@ -1,5 +1,6 @@
 package com.github.hurrcook.domain.recipe._recipe_food.entity;
 
+import com.github.hurrcook.domain.recipe.dto.request.RecipeIngredientRequest;
 import com.github.hurrcook.domain.recipe.entity.Recipe;
 import com.github.hurrcook.global.common.Unit;
 import com.github.hurrcook.global.infra.BaseSchema;
@@ -10,7 +11,7 @@ import lombok.*;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 @EqualsAndHashCode(callSuper = true)
 public class RecipeFood extends BaseSchema {
 
@@ -27,4 +28,8 @@ public class RecipeFood extends BaseSchema {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id",nullable = false)
     Recipe recipe;
+
+    public static RecipeFood from(RecipeIngredientRequest request,Recipe recipe) {
+        return RecipeFood.of(request.getName(),request.getAmount(),request.getUnit(),recipe);
+    }
 }

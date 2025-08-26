@@ -1,6 +1,7 @@
 package com.github.hurrcook.domain.recipe.entity;
 
 import com.github.hurrcook.domain.recipe._recipe_food.entity.RecipeFood;
+import com.github.hurrcook.domain.recipe.dto.request.RecipeIngredientRequest;
 import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.global.infra.BaseSchema;
 import jakarta.persistence.*;
@@ -25,18 +26,26 @@ public class Recipe extends BaseSchema {
     String title;
 
     @Column(nullable = false)
-    Integer time;
+    String time;
 
     @Column
     String image;
 
     @ElementCollection
     @Builder.Default
-    List<String> contents = new ArrayList<>();
+    List<String> steps = new ArrayList<>();
 
     @OneToMany(mappedBy = "recipe",  cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     @Builder.Default
     List<RecipeFood> ingredients = new ArrayList<>();
 
+    public void addIngredient(RecipeIngredientRequest request) {
+        RecipeFood recipeFood = RecipeFood.from(request,this);
+        this.ingredients.add(recipeFood);
+    }
+
+    public void addIngredients(List<RecipeIngredientRequest> requests) {
+        requests.forEach(this::addIngredient);
+    }
 
 }
