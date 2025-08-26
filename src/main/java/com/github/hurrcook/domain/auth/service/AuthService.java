@@ -3,6 +3,7 @@ package com.github.hurrcook.domain.auth.service;
 import com.github.hurrcook.domain.auth.dto.response.KakaoTokenResponse;
 import com.github.hurrcook.domain.auth.dto.response.KakaoUserInfoResponse;
 import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
+import com.github.hurrcook.domain.auth.entity.RefreshToken;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
 import com.github.hurrcook.domain.cookware.entity.Cookware;
 import com.github.hurrcook.domain.user.entity.User;
@@ -62,11 +63,10 @@ public class AuthService {
         User user = login(kakaoUserInfoResponse);
 
         // JWT 토큰 생성
-        //TODO: 리프레시 토큰 관련 추가 후 반환 값에 반영
-        String accessToken = jwtUtil.createToken(user);
-//      String refreshToken = jwtUtil.
+        String accessToken = jwtUtil.createAccessToken(user);
+        String refreshToken = jwtUtil.createRefreshToken(user);
 
-        return LoginResponse.of(user.getId(),user.getName(),accessToken, kakaoTokenResponse.getRefreshToken());
+        return LoginResponse.of(user.getId(),user.getName(),accessToken, refreshToken);
     }
 
 
