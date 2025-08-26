@@ -1,10 +1,12 @@
 package com.github.hurrcook.domain.user.entity;
 
 import com.github.hurrcook.domain.cookware.entity.Cookware;
+import com.github.hurrcook.domain.recipe.entity.Recipe;
 import com.github.hurrcook.global.infra.BaseSchema;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -23,4 +25,7 @@ public class User extends BaseSchema {
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Cookware cookware;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Recipe> recipes;
 }
