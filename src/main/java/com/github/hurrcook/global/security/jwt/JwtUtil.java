@@ -2,8 +2,10 @@ package com.github.hurrcook.global.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.github.hurrcook.domain.auth.entity.RefreshToken;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
 import com.github.hurrcook.domain.user.entity.User;
+import com.github.hurrcook.domain.user.repository.RefreshTokenRedisRepository;
 import com.github.hurrcook.global.property.JwtProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ import java.util.UUID;
 @Configuration
 @RequiredArgsConstructor
 public class JwtUtil {
-
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final JwtProperty jwtProperty;
 
     @Bean
@@ -38,11 +40,22 @@ public class JwtUtil {
     }
 
     public String createRefreshToken(User user){
-        return JWT.create()
+        String token =  JWT.create()
                 .withIssuedAt(Instant.now())
                 .withExpiresAt(Instant.now().plus(jwtProperty.getRefreshExpiration(), ChronoUnit.HOURS))
                 .withClaim("id",user.getId().toString())
                 .sign(algorithm());
+
+        // refreshToken 엔티티 생성 및 저장
+        RefreshToken refreshToken = RefreshToken.builder()
+                .userId(user.getKakaoId().toString())
+                .token(token)
+                .ttl(jwtProperty.getRefreshExpiration())
+                .build();
+
+        refreshTokenRedisRepository.save(refreshToken);
+
+        return token;
     }
 
 
