@@ -32,4 +32,11 @@ public class RecipeController {
 
         return ApiResponse.ok();
     }
+
+    @DeleteMapping("/{recipe}")
+    public ApiResponse<Void> deleteRecipe(@PathVariable Recipe recipe, @AuthenticationPrincipal User user) {
+        recipeService.deleteRecipe(recipe,user);
+
+        return ApiResponse.ok();
+    }
 }

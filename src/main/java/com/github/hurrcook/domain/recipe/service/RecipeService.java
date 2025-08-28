@@ -46,5 +46,14 @@ public class RecipeService {
 
     }
 
+    @Transactional
+    public void deleteRecipe(Recipe recipe, User user){
+        if (!recipe.getUser().equals(user)){
+            throw RecipeExceptions.RECIPE_ACCESS_DENIED.toApiException();
+        }
+
+        recipeRepository.delete(recipe);
+    }
+
 
 }
