@@ -8,11 +8,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(staticName = "of")
-@EqualsAndHashCode(callSuper = true)
 public class RecipeFood extends BaseSchema {
 
     @Column(nullable = false)
