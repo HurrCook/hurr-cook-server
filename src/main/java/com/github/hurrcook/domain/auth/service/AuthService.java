@@ -1,9 +1,9 @@
 package com.github.hurrcook.domain.auth.service;
 
+import com.github.hurrcook.domain.auth.dto.response.CheckLoginFirst;
 import com.github.hurrcook.domain.auth.dto.response.KakaoTokenResponse;
 import com.github.hurrcook.domain.auth.dto.response.KakaoUserInfoResponse;
 import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
-import com.github.hurrcook.domain.auth.entity.RefreshToken;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
 import com.github.hurrcook.domain.cookware.entity.Cookware;
 import com.github.hurrcook.domain.user.entity.User;
@@ -59,14 +59,14 @@ public class AuthService {
         KakaoTokenResponse kakaoTokenResponse = getTokenFromKakao(authorizeCode);
         // 토큰으로 유저 정보 받음
         KakaoUserInfoResponse kakaoUserInfoResponse = getUserInfoFromKakao(kakaoTokenResponse.getAccessToken());
-        // 사용자 로그인 (최초 시 회원가입)
-        User user = login(kakaoUserInfoResponse);
 
+        CheckLoginFirst loginResult = login(kakaoUserInfoResponse); // 로그인 결과 반환 (최초 로그인 시 isFirst==ture)
+        User user = loginResult.getUser();
         // JWT 토큰 생성
         String accessToken = jwtUtil.createAccessToken(user);
         String refreshToken = jwtUtil.createRefreshToken(user);
 
-        return LoginResponse.of(user.getId(),user.getName(),accessToken, refreshToken);
+        return LoginResponse.of(user.getId(), user.getName(),accessToken, refreshToken, loginResult.isFirstLogin());
     }
 
 
@@ -74,7 +74,7 @@ public class AuthService {
     /*          내부 메서드          */
 
     /* 서비스 회원가입/로그인 처리 */
-    private User login(KakaoUserInfoResponse kakaoUserInfoResponse){
+    private CheckLoginFirst login(KakaoUserInfoResponse kakaoUserInfoResponse){
         Long kakaoId = kakaoUserInfoResponse.getId();
         String nickname = kakaoUserInfoResponse.getKakaoAccount().getProfile().getNickname();
 
@@ -82,9 +82,13 @@ public class AuthService {
                 .map(existingUser-> { // 유저가 있으면 로그인 처리, 변경 사항을 업데이트
                     existingUser.setName(nickname);
 
-                    return existingUser;
+                    return CheckLoginFirst.of(existingUser, false);
                 })
-                .orElseGet(()-> of(kakaoId,nickname));
+                .orElseGet(()-> {
+                    User newUser = of(kakaoId, nickname); // 유저가 없으면 생성, isFirstLogin을 true로 설정
+
+                    return CheckLoginFirst.of(newUser, true);
+                });
 
     }
 
