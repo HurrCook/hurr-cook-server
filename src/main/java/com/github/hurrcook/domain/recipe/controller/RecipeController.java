@@ -32,15 +32,15 @@ public class RecipeController {
     }
 
     @PutMapping("/{recipe}")
-    public ApiResponse<Void> updateRecipe(@RequestBody @Valid ModifyRecipeRequest modifyRecipeRequest, @PathVariable Recipe recipe, @AuthenticationPrincipal User user) {
-        recipeService.updateRecipe(modifyRecipeRequest,recipe,user);
+    public ApiResponse<Void> updateRecipe(@RequestBody @Valid ModifyRecipeRequest modifyRecipeRequest, @PathVariable Recipe recipe) {
+        recipeService.updateRecipe(modifyRecipeRequest,recipe);
 
         return ApiResponse.ok();
     }
 
     @DeleteMapping("/{recipe}")
-    public ApiResponse<Void> deleteRecipe(@PathVariable Recipe recipe, @AuthenticationPrincipal User user) {
-        recipeService.deleteRecipe(recipe,user);
+    public ApiResponse<Void> deleteRecipe(@PathVariable Recipe recipe) {
+        recipeService.deleteRecipe(recipe);
 
         return ApiResponse.ok();
     }
