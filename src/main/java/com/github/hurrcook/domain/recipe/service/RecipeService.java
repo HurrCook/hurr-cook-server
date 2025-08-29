@@ -59,8 +59,7 @@ public class RecipeService {
 
     @Transactional
     public RecipeListResponse getRecipeList(User user){
-
-        return RecipeListResponse.from(user.getRecipes());
+        return RecipeListResponse.from(recipeRepository.findAllByUser(user));
     }
 
 
