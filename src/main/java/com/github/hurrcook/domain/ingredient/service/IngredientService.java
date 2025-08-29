@@ -13,11 +13,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class IngredientService {
 
     private final IngredientRepository ingredientRepository;
 
+    @Transactional
     public void addIngredient(User user, List<IngredientRequest> ingredientRequests) {
 
         List<Ingredient> ingredients = new ArrayList<>();
