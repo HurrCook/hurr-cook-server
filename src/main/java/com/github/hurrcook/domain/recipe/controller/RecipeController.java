@@ -2,6 +2,7 @@ package com.github.hurrcook.domain.recipe.controller;
 
 import com.github.hurrcook.domain.recipe.dto.request.ModifyRecipeRequest;
 import com.github.hurrcook.domain.recipe.dto.request.SaveRecipeRequest;
+import com.github.hurrcook.domain.recipe.dto.response.RecipeListResponse;
 import com.github.hurrcook.domain.recipe.entity.Recipe;
 import com.github.hurrcook.domain.recipe.service.RecipeService;
 import com.github.hurrcook.domain.user.entity.User;
@@ -39,4 +40,10 @@ public class RecipeController {
 
         return ApiResponse.ok();
     }
+
+    @GetMapping ApiResponse<RecipeListResponse> getRecipeList(@AuthenticationPrincipal User user) {
+
+        return ApiResponse.ok(recipeService.getRecipeList(user));
+    }
+
 }
