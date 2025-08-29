@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -15,10 +18,15 @@ public class IngredientService {
 
     private final IngredientRepository ingredientRepository;
 
-    public void addIngredient(User user, IngredientRequest ingredientRequest) {
+    public void addIngredient(User user, List<IngredientRequest> ingredientRequests) {
 
-        Ingredient ingredient = Ingredient.from(user, ingredientRequest);
+        List<Ingredient> ingredients = new ArrayList<>();
 
-        ingredientRepository.save(ingredient);
+        for (IngredientRequest ingredientRequest : ingredientRequests) {
+            ingredients.add(Ingredient.from(user, ingredientRequest));
+
+        }
+
+        ingredientRepository.saveAll(ingredients);
     }
 }

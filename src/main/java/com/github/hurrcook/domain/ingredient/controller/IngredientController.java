@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/ingredients")
@@ -20,9 +22,9 @@ public class IngredientController {
     private final IngredientService ingredientService;
 
     @PostMapping("/add")
-    public ApiResponse<Void> addIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid IngredientRequest ingredientRequest) {
+    public ApiResponse<Void> addIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid List<IngredientRequest> ingredientRequests) {
 
-        ingredientService.addIngredient(user, ingredientRequest);
+        ingredientService.addIngredient(user, ingredientRequests);
 
         return ApiResponse.ok();
     }
