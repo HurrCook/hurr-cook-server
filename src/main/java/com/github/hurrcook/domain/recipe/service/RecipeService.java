@@ -27,6 +27,7 @@ public class RecipeService {
                 .title(request.getTitle())
                 .time(request.getTime())
                 .steps(request.getSteps())
+                .image(request.getImage())
                 .user(user)
                 .build();
 

@@ -24,6 +24,7 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @PostMapping
+    @Operation(summary = "레시피 저장")
     public ApiResponse<Void> saveRecipe(@RequestBody @Valid SaveRecipeRequest saveRecipeRequest, @AuthenticationPrincipal User user) {
 
         recipeService.saveRecipe(saveRecipeRequest,user);
@@ -32,20 +33,26 @@ public class RecipeController {
     }
 
     @PutMapping("/{recipe}")
-    public ApiResponse<Void> updateRecipe(@RequestBody @Valid ModifyRecipeRequest modifyRecipeRequest, @PathVariable Recipe recipe) {
+    @Operation(summary = "레시피 수정")
+    public ApiResponse<Void> updateRecipe(@RequestBody @Valid ModifyRecipeRequest modifyRecipeRequest, @Parameter(description = "레시피 ID",schema = @Schema(type = "string", format = "uuid")) @PathVariable Recipe recipe) {
+
         recipeService.updateRecipe(modifyRecipeRequest,recipe);
 
         return ApiResponse.ok();
     }
 
     @DeleteMapping("/{recipe}")
-    public ApiResponse<Void> deleteRecipe(@PathVariable Recipe recipe) {
+    @Operation(summary = "레시피 삭제")
+    public ApiResponse<Void> deleteRecipe(@Parameter(description = "레시피 ID",schema = @Schema(type = "string", format = "uuid")) @PathVariable Recipe recipe) {
+
         recipeService.deleteRecipe(recipe);
 
         return ApiResponse.ok();
     }
 
-    @GetMapping ApiResponse<RecipeListResponse> getRecipeList(@AuthenticationPrincipal User user) {
+    @GetMapping
+    @Operation(summary = "레시피 목록 조회")
+    public ApiResponse<RecipeListResponse> getRecipeList(@AuthenticationPrincipal User user) {
 
         return ApiResponse.ok(recipeService.getRecipeList(user));
     }
