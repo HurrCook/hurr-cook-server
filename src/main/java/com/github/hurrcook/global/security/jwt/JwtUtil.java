@@ -43,13 +43,13 @@ public class JwtUtil {
         String token =  JWT.create()
                 .withIssuedAt(Instant.now())
                 .withExpiresAt(Instant.now().plus(jwtProperty.getRefreshExpiration(), ChronoUnit.HOURS))
-                .withClaim("id",user.getId().toString())
+                .withClaim("id",user.getId().toString()) // baseSchema Id
                 .sign(algorithm());
 
         // refreshToken 엔티티 생성 및 저장
         RefreshToken refreshToken = RefreshToken.builder()
-                .userId(user.getKakaoId().toString())
-                .token(token)
+                .userId(user.getId().toString()) // 토큰에 baseSchema Id로 저장
+                .refreshToken(token)
                 .ttl(jwtProperty.getRefreshExpiration())
                 .build();
 

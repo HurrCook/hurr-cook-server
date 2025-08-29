@@ -20,7 +20,7 @@ public record RefreshToken(
         String userId,
 
         @Indexed
-        String token,
+        String refreshToken,
 
         @TimeToLive(unit = TimeUnit.HOURS)
         long ttl
