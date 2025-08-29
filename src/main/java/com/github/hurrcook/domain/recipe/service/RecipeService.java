@@ -4,11 +4,13 @@ import com.github.hurrcook.domain.recipe._recipe_food.repository.RecipeFoodRepos
 import com.github.hurrcook.domain.recipe.dto.request.ModifyRecipeRequest;
 import com.github.hurrcook.domain.recipe.dto.request.SaveRecipeRequest;
 import com.github.hurrcook.domain.recipe.dto.response.RecipeListResponse;
+import com.github.hurrcook.domain.recipe.dto.response.RecipeResponse;
 import com.github.hurrcook.domain.recipe.entity.Recipe;
 import com.github.hurrcook.domain.recipe.exception.RecipeExceptions;
 import com.github.hurrcook.domain.recipe.repository.RecipeRepository;
 import com.github.hurrcook.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +62,13 @@ public class RecipeService {
     @Transactional
     public RecipeListResponse getRecipeList(User user){
         return RecipeListResponse.from(recipeRepository.findAllByUser(user));
+    }
+
+    @Transactional
+    @PreAuthorize("#recipe.user.id == authentication.principal.id")
+    public RecipeResponse getRecipe(Recipe recipe){
+
+        return  RecipeResponse.from(recipe);
     }
 
 
