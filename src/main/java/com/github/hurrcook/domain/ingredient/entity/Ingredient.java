@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class Ingredient extends BaseSchema {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
