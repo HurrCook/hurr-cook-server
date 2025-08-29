@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 public class Ingredient extends BaseSchema {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     User user;
 
