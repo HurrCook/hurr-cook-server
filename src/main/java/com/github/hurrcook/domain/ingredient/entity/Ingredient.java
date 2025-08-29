@@ -30,6 +30,7 @@ public class Ingredient extends BaseSchema {
     @Column(nullable = false)
     LocalDateTime expire_time;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     Unit unit;
 }
