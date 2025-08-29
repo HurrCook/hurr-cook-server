@@ -2,8 +2,10 @@ package com.github.hurrcook.global.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.github.hurrcook.domain.auth.entity.RefreshToken;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
 import com.github.hurrcook.domain.user.entity.User;
+import com.github.hurrcook.domain.user.repository.RefreshTokenRedisRepository;
 import com.github.hurrcook.global.property.JwtProperty;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ import java.util.UUID;
 @Configuration
 @RequiredArgsConstructor
 public class JwtUtil {
-
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final JwtProperty jwtProperty;
 
     @Bean
@@ -29,13 +31,31 @@ public class JwtUtil {
         return Algorithm.HMAC256(jwtProperty.getSecretKey());
     }
 
-    public String createToken(User user){
-
+    public String createAccessToken(User user){
         return JWT.create()
                 .withIssuedAt(Instant.now())
-                .withExpiresAt(Instant.now().plus(jwtProperty.getExpiration(), ChronoUnit.HOURS))
+                .withExpiresAt(Instant.now().plus(jwtProperty.getAccessExpiration(), ChronoUnit.HOURS))
                 .withClaim("id",user.getId().toString())
                 .sign(algorithm());
+    }
+
+    public String createRefreshToken(User user){
+        String token =  JWT.create()
+                .withIssuedAt(Instant.now())
+                .withExpiresAt(Instant.now().plus(jwtProperty.getRefreshExpiration(), ChronoUnit.HOURS))
+                .withClaim("id",user.getId().toString()) // baseSchema Id
+                .sign(algorithm());
+
+        // refreshToken 엔티티 생성 및 저장
+        RefreshToken refreshToken = RefreshToken.builder()
+                .userId(user.getId().toString()) // 토큰에 baseSchema Id로 저장
+                .refreshToken(token)
+                .ttl(jwtProperty.getRefreshExpiration())
+                .build();
+
+        refreshTokenRedisRepository.save(refreshToken);
+
+        return token;
     }
 
 

@@ -18,4 +18,6 @@ public class LoginResponse {
     @JsonProperty("accessToken") private String accessToken;
 
     @JsonProperty("refreshToken") private String refreshToken;
+
+    @JsonProperty("isFirstLogin") private boolean isFirstLogin;
 }

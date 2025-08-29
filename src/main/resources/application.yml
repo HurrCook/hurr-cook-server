@@ -33,7 +33,8 @@ spring:
 app:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
-    expiration: 24
+    access-expiration: 24
+    refresh-expiration: 720 # 24(h)*30(day)
 
   oauth:
     kakao:
