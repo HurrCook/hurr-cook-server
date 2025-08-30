@@ -24,7 +24,7 @@ public class IngredientController {
 
     private final IngredientService ingredientService;
 
-    @PostMapping("/add")
+    @PostMapping
     @Operation(summary = "재료 등록")
     public ApiResponse<Void> addIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid List<IngredientRequest> ingredientRequests) {
 
