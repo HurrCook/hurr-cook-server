@@ -1,5 +1,6 @@
 package com.github.hurrcook.domain.ingredient.entity;
 
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
 import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.global.common.Unit;
 import com.github.hurrcook.global.infra.BaseSchema;
@@ -32,4 +33,14 @@ public class Ingredient extends BaseSchema {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     Unit unit;
+
+    public static Ingredient from(User user, IngredientRequest request) {
+        return Ingredient.builder()
+                .user(user)
+                .name(request.getName())
+                .amount(request.getAmount())
+                .expire_time(request.getExpire_time())
+                .unit(request.getUnit())
+                .build();
+    }
 }
