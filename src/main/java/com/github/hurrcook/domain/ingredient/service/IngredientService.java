@@ -34,7 +34,7 @@ public class IngredientService {
     // 유저가 가진 모든 재료 조회
     @Transactional(readOnly = true)
     public List<IngredientResponse> getIngredients(User user) {
-        return ingredientRepository.findIngredientByUser(user)
+        return ingredientRepository.findAllByUser(user)
                 .stream()
                 .map(IngredientResponse::from)
                 .toList();
