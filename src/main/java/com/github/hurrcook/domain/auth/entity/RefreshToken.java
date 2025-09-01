@@ -17,6 +17,7 @@ public record RefreshToken(
         @Id
         Long id,
 
+        @Indexed
         String userId,
 
         @Indexed
