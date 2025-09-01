@@ -14,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,6 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
     @Override
@@ -41,6 +43,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try{
             if (jwtUtil.validateToken(accessToken)) {
+
+                // 요청 시 black 처리된 액세스 토큰인지 확인
+                String key = "BLACKED_TOKEN" + accessToken;
+                if (redisTemplate.hasKey(key)) {
+                    throw AuthExceptions.INVALID_TOKEN.toApiException();
+                }
 
                 UUID id = jwtUtil.extractIdFromToken(accessToken);
                 User user = userRepository.findById(id)
