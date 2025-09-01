@@ -1,7 +1,6 @@
 package com.github.hurrcook.domain.auth.service;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.github.hurrcook.domain.auth.dto.response.CheckLoginFirst;
 import com.github.hurrcook.domain.auth.dto.response.KakaoTokenResponse;
 import com.github.hurrcook.domain.auth.dto.response.KakaoUserInfoResponse;
@@ -92,11 +91,11 @@ public class AuthService {
             if (!userRepository.existsById(userId))
                 throw UserExceptions.USER_NOT_FOUND.toApiException();
 
-            refreshTokenRedisRepository.deleteById(userId); // 유저의 리프레시 토큰 삭제
+            refreshTokenRedisRepository.deleteByUserId(userId.toString()); // 유저의 리프레시 토큰 삭제
 
             /* 액세스 토큰을 redis에 저장(blacked 상태) */
             Instant expiration = jwtUtil.extractExpirationFromToken(accessToken); // 액세스 토큰 ttl
-            Long remainingExpiration = expiration.toEpochMilli() - Instant.now().toEpochMilli(); // 남은 유효시간
+            long remainingExpiration = expiration.toEpochMilli() - Instant.now().toEpochMilli(); // 남은 유효시간
 
             // 남은 유효시간 만큼 블랙 리스트에 저장
             if (remainingExpiration > 0) {
