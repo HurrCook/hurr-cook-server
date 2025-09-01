@@ -16,6 +16,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -93,5 +94,15 @@ public class JwtUtil {
     public UUID extractIdFromToken(String token){
 
         return JWT.decode(token).getClaim("id").as(UUID.class);
+    }
+
+    public Instant extractExpirationFromToken(String token){
+        var verified = JWT.require(algorithm()).build().verify(token);
+        Date exp = verified.getExpiresAt();
+
+        if (exp == null) {
+            throw AuthExceptions.INVALID_TOKEN.toApiException();
+        }
+        return exp.toInstant();
     }
 }

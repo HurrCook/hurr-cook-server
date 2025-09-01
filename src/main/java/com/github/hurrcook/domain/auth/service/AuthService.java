@@ -1,5 +1,6 @@
 package com.github.hurrcook.domain.auth.service;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.github.hurrcook.domain.auth.dto.response.CheckLoginFirst;
 import com.github.hurrcook.domain.auth.dto.response.KakaoTokenResponse;
 import com.github.hurrcook.domain.auth.dto.response.KakaoUserInfoResponse;
@@ -7,10 +8,13 @@ import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
 import com.github.hurrcook.domain.cookware.entity.Cookware;
 import com.github.hurrcook.domain.user.entity.User;
+import com.github.hurrcook.domain.user.exception.UserExceptions;
+import com.github.hurrcook.domain.user.repository.RefreshTokenRedisRepository;
 import com.github.hurrcook.domain.user.repository.UserRepository;
 import com.github.hurrcook.global.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +23,18 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final JwtUtil jwtUtil;
     private final RestTemplate restTemplate;
     private final UserRepository userRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Value("${app.oauth.kakao.client-id}")
     private String clientId;
@@ -35,9 +45,9 @@ public class AuthService {
     @Value("${app.oauth.kakao.client-secret}")
     private String clientSecret;
 
-    private final String KAKAO_AUTH_URL = "https://kauth.kakao.com/oauth/authorize";
-    private final String KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
-    private final String KAKAO_USER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
+    private static final String KAKAO_AUTH_URL = "https://kauth.kakao.com/oauth/authorize";
+    private static final String KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
+    private static final String KAKAO_USER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
 
 
 
@@ -67,6 +77,35 @@ public class AuthService {
         String refreshToken = jwtUtil.createRefreshToken(user);
 
         return LoginResponse.of(user.getId(), user.getName(),accessToken, refreshToken, loginResult.isFirstLogin());
+    }
+
+
+    /* 사용자 로그아웃: 액세스토큰 블랙리스트, 리프레시 토큰 삭제 */
+    @Transactional
+    public void logout(String accessToken){
+        try{
+            // 토큰에서 userId 추출
+            UUID userId = jwtUtil.extractIdFromToken(accessToken);
+
+            // 유저 유효성 검사
+            if (!userRepository.existsById(userId))
+                throw UserExceptions.USER_NOT_FOUND.toApiException();
+
+            refreshTokenRedisRepository.deleteByUserId(userId.toString()); // 유저의 리프레시 토큰 삭제
+
+            /* 액세스 토큰을 redis에 저장(blacked 상태) */
+            Instant expiration = jwtUtil.extractExpirationFromToken(accessToken); // 액세스 토큰 ttl
+            long remainingExpiration = expiration.toEpochMilli() - Instant.now().toEpochMilli(); // 남은 유효시간
+
+            // 남은 유효시간 만큼 블랙 리스트에 저장
+            if (remainingExpiration > 0) {
+                String key = "BLACKED_TOKEN" + accessToken;
+                String value = "blacklisted";
+                redisTemplate.opsForValue().set(key, value, Duration.ofMillis(remainingExpiration));
+            }
+        } catch (JWTVerificationException e){
+            throw AuthExceptions.INVALID_TOKEN.toApiException();
+        }
     }
 
 
