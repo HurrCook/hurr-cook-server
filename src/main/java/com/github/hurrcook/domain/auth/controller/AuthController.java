@@ -1,6 +1,7 @@
 package com.github.hurrcook.domain.auth.controller;
 
 import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
+import com.github.hurrcook.domain.auth.exception.AuthExceptions;
 import com.github.hurrcook.domain.auth.service.AuthService;
 import com.github.hurrcook.global.response.ApiResponse;
 import com.github.hurrcook.global.security.jwt.JwtUtil;
@@ -37,10 +38,14 @@ public class AuthController {
         return ApiResponse.ok(authService.kakaoLogin(authorizeCode));
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     @Operation(summary = "로그아웃", description = "사용자 세션 종료: 리프레시 토큰 삭제, 액세스 토큰 블랙리스트 처리")
     public ApiResponse<Void> logout(HttpServletRequest request) { // 현재 액세스 토큰으로 요청
-        authService.logout(jwtUtil.extractToken(request));
+        String accessToken = jwtUtil.extractToken(request);
+        if (accessToken == null || accessToken.isBlank()) {
+            AuthExceptions.INVALID_TOKEN.toApiException();
+        }
+        authService.logout(accessToken);
         return ApiResponse.ok();
     }
 }
