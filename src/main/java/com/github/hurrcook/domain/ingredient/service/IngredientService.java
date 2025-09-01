@@ -45,7 +45,7 @@ public class IngredientService {
     // 유저가 가진 단일 재료 조회
     @Transactional(readOnly = true)
     public IngredientResponse getIngredient(User user, UUID ingredientId) {
-        Ingredient ingredient = ingredientRepository.findIngredientByIdAndUser(ingredientId, user)
+        Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
                 .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
 
         return IngredientResponse.from(ingredient);
