@@ -94,4 +94,9 @@ public class JwtUtil {
 
         return JWT.decode(token).getClaim("id").as(UUID.class);
     }
+
+    public Instant extractExpirationFromToken(String token){
+
+        return JWT.decode(token).getExpiresAt().toInstant();
+    }
 }
