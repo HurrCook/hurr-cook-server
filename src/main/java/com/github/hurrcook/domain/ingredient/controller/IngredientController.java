@@ -1,5 +1,6 @@
 package com.github.hurrcook.domain.ingredient.controller;
 
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientReduceRequest;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
 import com.github.hurrcook.domain.ingredient.service.IngredientService;
 import com.github.hurrcook.domain.user.entity.User;
@@ -9,10 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +27,14 @@ public class IngredientController {
     public ApiResponse<Void> addIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid List<IngredientRequest> ingredientRequests) {
 
         ingredientService.addIngredient(user, ingredientRequests);
+
+        return ApiResponse.ok();
+    }
+
+    @PutMapping
+    public ApiResponse<Void> reduceIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid List<IngredientReduceRequest> ingredientReduceRequests) {
+
+        ingredientService.reduceIngredient(user, ingredientReduceRequests);
 
         return ApiResponse.ok();
     }
