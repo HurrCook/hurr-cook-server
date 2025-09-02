@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,5 +36,11 @@ public class IngredientController {
     @Operation(summary = "재료 목록 조회")
     public ApiResponse<List<IngredientResponse>> getAllIngredients(@AuthenticationPrincipal User user) {
         return ApiResponse.ok(ingredientService.getIngredients(user));
+    }
+
+    @GetMapping("/{ingredientId}")
+    @Operation(summary = "단일 재료 조회")
+    public ApiResponse<IngredientResponse> getIngredient(@AuthenticationPrincipal User user, @PathVariable UUID ingredientId) {
+        return ApiResponse.ok(ingredientService.getIngredient(user, ingredientId));
     }
 }

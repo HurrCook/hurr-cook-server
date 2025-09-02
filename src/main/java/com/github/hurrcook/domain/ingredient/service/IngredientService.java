@@ -4,6 +4,7 @@ import com.github.hurrcook.domain.ingredient.IngredientRepository;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.entity.Ingredient;
+import com.github.hurrcook.domain.ingredient.exception.IngredientExceptions;
 import com.github.hurrcook.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,5 +40,14 @@ public class IngredientService {
                 .stream()
                 .map(IngredientResponse::from)
                 .toList();
+    }
+
+    // 유저가 가진 단일 재료 조회
+    @Transactional(readOnly = true)
+    public IngredientResponse getIngredient(User user, UUID ingredientId) {
+        Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
+                .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
+
+        return IngredientResponse.from(ingredient);
     }
 }
