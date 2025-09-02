@@ -30,6 +30,7 @@ public class IngredientService {
         ingredientRepository.saveAll(ingredients);
     }
 
+    @Transactional
     public void reduceIngredient(User user, List<IngredientReduceRequest> ingredientReduceRequests) {
 
         Map<UUID, Integer> reduceMap = new LinkedHashMap<>();

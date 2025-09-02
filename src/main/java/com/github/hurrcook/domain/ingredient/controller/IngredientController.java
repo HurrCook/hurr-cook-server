@@ -32,6 +32,7 @@ public class IngredientController {
     }
 
     @PutMapping
+    @Operation(summary = "재료 차감")
     public ApiResponse<Void> reduceIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid List<IngredientReduceRequest> ingredientReduceRequests) {
 
         ingredientService.reduceIngredient(user, ingredientReduceRequests);
