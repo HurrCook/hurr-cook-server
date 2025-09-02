@@ -14,6 +14,7 @@ public class IngredientReduceRequest {
     @Schema(description = "음식 id")
     UUID userFoodId;
 
+    @NotNull
     @PositiveOrZero
     @Schema(description = "사용 수량")
     Integer useAmount;
