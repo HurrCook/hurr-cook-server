@@ -28,7 +28,7 @@ public class Ingredient extends BaseSchema {
     int amount;
 
     @Column(nullable = false)
-    LocalDateTime expire_time;
+    LocalDateTime expireDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -39,7 +39,7 @@ public class Ingredient extends BaseSchema {
                 .user(user)
                 .name(request.getName())
                 .amount(request.getAmount())
-                .expire_time(request.getExpire_time())
+                .expireDate(request.getExpireDate())
                 .unit(request.getUnit())
                 .build();
     }

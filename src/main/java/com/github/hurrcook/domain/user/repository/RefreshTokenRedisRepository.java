@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface RefreshTokenRedisRepository extends CrudRepository<RefreshToken, Long> {
     Optional<RefreshToken> findByRefreshToken(String refreshToken);
+    void deleteByUserId(String userId);
 }
