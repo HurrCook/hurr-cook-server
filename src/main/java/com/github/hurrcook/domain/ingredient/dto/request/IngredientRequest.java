@@ -1,3 +1,4 @@
+
 package com.github.hurrcook.domain.ingredient.dto.request;
 
 import com.github.hurrcook.global.common.Unit;
@@ -26,5 +27,5 @@ public class IngredientRequest {
 
     @NotNull
     @Schema(description = "유통기한")
-    LocalDateTime expire_time;
+    LocalDateTime expireDate;
 }

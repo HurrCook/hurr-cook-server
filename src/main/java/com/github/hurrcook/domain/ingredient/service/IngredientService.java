@@ -3,11 +3,14 @@ package com.github.hurrcook.domain.ingredient.service;
 import com.github.hurrcook.domain.ingredient.IngredientRepository;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientReduceRequest;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
+import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.entity.Ingredient;
+import com.github.hurrcook.domain.ingredient.exception.IngredientExceptions;
 import com.github.hurrcook.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.*;
 
@@ -29,6 +32,7 @@ public class IngredientService {
 
         ingredientRepository.saveAll(ingredients);
     }
+    
 
     @Transactional
     public void reduceIngredient(User user, List<IngredientReduceRequest> ingredientReduceRequests) {
@@ -55,5 +59,24 @@ public class IngredientService {
         if (!toDelete.isEmpty()) {
             ingredientRepository.deleteAllInBatch(toDelete);
         }
+    }
+
+
+    // 유저가 가진 모든 재료 조회
+    @Transactional(readOnly = true)
+    public List<IngredientResponse> getIngredients(User user) {
+        return ingredientRepository.findAllByUser(user)
+                .stream()
+                .map(IngredientResponse::from)
+                .toList();
+    }
+
+    // 유저가 가진 단일 재료 조회
+    @Transactional(readOnly = true)
+    public IngredientResponse getIngredient(User user, UUID ingredientId) {
+        Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
+                .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
+
+        return IngredientResponse.from(ingredient);
     }
 }
