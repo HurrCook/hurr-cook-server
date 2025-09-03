@@ -8,6 +8,7 @@ import com.github.hurrcook.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class IngredientController {
 
     @PutMapping
     @Operation(summary = "재료 차감")
-    public ApiResponse<Void> reduceIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid List<IngredientReduceRequest> ingredientReduceRequests) {
+    public ApiResponse<Void> reduceIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid @NotEmpty List<@Valid IngredientReduceRequest> ingredientReduceRequests) {
 
         ingredientService.reduceIngredient(user, ingredientReduceRequests);
 
