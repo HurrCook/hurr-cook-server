@@ -4,10 +4,10 @@ import com.github.hurrcook.domain.auth.dto.response.CheckLoginFirst;
 import com.github.hurrcook.domain.auth.dto.response.KakaoTokenResponse;
 import com.github.hurrcook.domain.auth.dto.response.KakaoUserInfoResponse;
 import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
+import com.github.hurrcook.domain.auth.entity.RefreshToken;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
 import com.github.hurrcook.domain.cookware.entity.Cookware;
 import com.github.hurrcook.domain.user.entity.User;
-import com.github.hurrcook.domain.user.exception.UserExceptions;
 import com.github.hurrcook.domain.user.repository.RefreshTokenRedisRepository;
 import com.github.hurrcook.domain.user.repository.UserRepository;
 import com.github.hurrcook.global.security.jwt.JwtUtil;
@@ -24,7 +24,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -80,21 +79,12 @@ public class AuthService {
 
 
     /* 사용자 로그아웃: 액세스토큰 블랙리스트, 리프레시 토큰 삭제 */
-//    @Transactional
-    public void logout(String accessToken,User user){
+    @Transactional
+    public void logout(String accessToken,String token){
 
-        // 토큰에서 userId 추출
-        UUID userId = jwtUtil.extractIdFromToken(accessToken);
-
-        // 유저 유효성 검사
-        User logoutUser = userRepository.findById(userId).orElseThrow(UserExceptions.USER_NOT_FOUND::toApiException);
-
-        //사용자 권한 검증
-        if (!logoutUser.equals(user)){
-            throw AuthExceptions.INVALID_USER_REQUEST.toApiException();
-        }
-
-        refreshTokenRedisRepository.deleteByUserId(userId.toString()); // 유저의 리프레시 토큰 삭제
+        // 유저의 리프레시 토큰 삭제
+        RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(token).orElseThrow(AuthExceptions.INVALID_TOKEN::toApiException);
+        refreshTokenRedisRepository.delete(refreshToken);
 
         /* 액세스 토큰을 redis에 저장(blacked 상태) */
         Instant expiration = jwtUtil.extractExpirationFromToken(accessToken); // 액세스 토큰 ttl

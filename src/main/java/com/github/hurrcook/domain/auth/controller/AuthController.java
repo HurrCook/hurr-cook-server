@@ -1,17 +1,17 @@
 package com.github.hurrcook.domain.auth.controller;
 
+import com.github.hurrcook.domain.auth.dto.request.RefreshTokenRequest;
 import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
 import com.github.hurrcook.domain.auth.service.AuthService;
-import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.global.response.ApiResponse;
 import com.github.hurrcook.global.security.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,10 +41,10 @@ public class AuthController {
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃", description = "사용자 세션 종료: 리프레시 토큰 삭제, 액세스 토큰 블랙리스트 처리")
-    public ApiResponse<Void> logout(@AuthenticationPrincipal User user, HttpServletRequest request) { // 현재 액세스 토큰으로 요청
+    public ApiResponse<Void> logout( HttpServletRequest request, @Valid @RequestBody RefreshTokenRequest refreshTokenRequest) { // 현재 액세스 토큰으로 요청
 
         String accessToken = jwtUtil.extractToken(request);
-        authService.logout(accessToken,user);
+        authService.logout(accessToken,refreshTokenRequest.getRefreshToken());
         return ApiResponse.ok();
     }
 }
