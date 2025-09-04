@@ -1,6 +1,5 @@
 package com.github.hurrcook.domain.auth.service;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.github.hurrcook.domain.auth.dto.response.CheckLoginFirst;
 import com.github.hurrcook.domain.auth.dto.response.KakaoTokenResponse;
 import com.github.hurrcook.domain.auth.dto.response.KakaoUserInfoResponse;
@@ -81,31 +80,33 @@ public class AuthService {
 
 
     /* 사용자 로그아웃: 액세스토큰 블랙리스트, 리프레시 토큰 삭제 */
-    @Transactional
-    public void logout(String accessToken){
-        try{
-            // 토큰에서 userId 추출
-            UUID userId = jwtUtil.extractIdFromToken(accessToken);
+//    @Transactional
+    public void logout(String accessToken,User user){
 
-            // 유저 유효성 검사
-            if (!userRepository.existsById(userId))
-                throw UserExceptions.USER_NOT_FOUND.toApiException();
+        // 토큰에서 userId 추출
+        UUID userId = jwtUtil.extractIdFromToken(accessToken);
 
-            refreshTokenRedisRepository.deleteByUserId(userId.toString()); // 유저의 리프레시 토큰 삭제
+        // 유저 유효성 검사
+        User logoutUser = userRepository.findById(userId).orElseThrow(UserExceptions.USER_NOT_FOUND::toApiException);
 
-            /* 액세스 토큰을 redis에 저장(blacked 상태) */
-            Instant expiration = jwtUtil.extractExpirationFromToken(accessToken); // 액세스 토큰 ttl
-            long remainingExpiration = expiration.toEpochMilli() - Instant.now().toEpochMilli(); // 남은 유효시간
-
-            // 남은 유효시간 만큼 블랙 리스트에 저장
-            if (remainingExpiration > 0) {
-                String key = "BLACKED_TOKEN" + accessToken;
-                String value = "blacklisted";
-                redisTemplate.opsForValue().set(key, value, Duration.ofMillis(remainingExpiration));
-            }
-        } catch (JWTVerificationException e){
-            throw AuthExceptions.INVALID_TOKEN.toApiException();
+        //사용자 권한 검증
+        if (!logoutUser.equals(user)){
+            throw AuthExceptions.INVALID_USER_REQUEST.toApiException();
         }
+
+        refreshTokenRedisRepository.deleteByUserId(userId.toString()); // 유저의 리프레시 토큰 삭제
+
+        /* 액세스 토큰을 redis에 저장(blacked 상태) */
+        Instant expiration = jwtUtil.extractExpirationFromToken(accessToken); // 액세스 토큰 ttl
+        long remainingExpiration = expiration.toEpochMilli() - Instant.now().toEpochMilli(); // 남은 유효시간
+
+        // 남은 유효시간 만큼 블랙 리스트에 저장
+        if (remainingExpiration > 0) {
+            String key = "BLACKED_TOKEN" + accessToken;
+            String value = "blacklisted";
+            redisTemplate.opsForValue().set(key, value, Duration.ofMillis(remainingExpiration));
+        }
+
     }
 
 
