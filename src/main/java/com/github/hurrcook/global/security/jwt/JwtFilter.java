@@ -44,6 +44,10 @@ public class JwtFilter extends OncePerRequestFilter {
         try{
             if (jwtUtil.validateToken(accessToken)) {
 
+                if (jwtUtil.extractTypeOfToken(accessToken).equals("RefreshToken")) {
+                    throw AuthExceptions.REFRESH_TOKEN_NOT_ALLOWED.toApiException();
+                }
+
                 // 요청 시 black 처리된 액세스 토큰인지 확인
                 String key = "BLACKED_TOKEN" + accessToken;
                 if (redisTemplate.hasKey(key)) {

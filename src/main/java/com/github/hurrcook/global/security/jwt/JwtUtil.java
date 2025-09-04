@@ -37,6 +37,7 @@ public class JwtUtil {
                 .withIssuedAt(Instant.now())
                 .withExpiresAt(Instant.now().plus(jwtProperty.getAccessExpiration(), ChronoUnit.HOURS))
                 .withClaim("id",user.getId().toString())
+                .withClaim("type","AccessToken")
                 .sign(algorithm());
     }
 
@@ -45,6 +46,7 @@ public class JwtUtil {
                 .withIssuedAt(Instant.now())
                 .withExpiresAt(Instant.now().plus(jwtProperty.getRefreshExpiration(), ChronoUnit.HOURS))
                 .withClaim("id",user.getId().toString()) // baseSchema Id
+                .withClaim("type","RefreshToken")
                 .sign(algorithm());
 
         // refreshToken 엔티티 생성 및 저장
@@ -94,6 +96,11 @@ public class JwtUtil {
     public UUID extractIdFromToken(String token){
 
         return JWT.decode(token).getClaim("id").as(UUID.class);
+    }
+
+    public String extractTypeOfToken(String token){
+
+        return JWT.decode(token).getClaim("type").as(String.class);
     }
 
     public Instant extractExpirationFromToken(String token){
