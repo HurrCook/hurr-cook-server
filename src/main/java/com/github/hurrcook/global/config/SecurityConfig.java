@@ -35,7 +35,9 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers(
-                                "/auth/**",
+                                "/auth/kakao/login",
+                                "/auth/kakao/callback",
+                                "/auth/reissuance",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
