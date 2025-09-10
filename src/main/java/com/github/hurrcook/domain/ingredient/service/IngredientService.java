@@ -37,6 +37,10 @@ public class IngredientService {
     @Transactional
     public void reduceIngredient(User user, List<IngredientReduceRequest> ingredientReduceRequests) {
 
+        if (ingredientReduceRequests == null || ingredientReduceRequests.isEmpty()) {
+            return;
+        }
+
         Map<UUID, Integer> reduceMap = new LinkedHashMap<>();
 
         for (IngredientReduceRequest r : ingredientReduceRequests) {
