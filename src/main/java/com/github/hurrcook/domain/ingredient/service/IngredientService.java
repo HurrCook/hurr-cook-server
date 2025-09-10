@@ -44,8 +44,14 @@ public class IngredientService {
         Map<UUID, Integer> reduceMap = new LinkedHashMap<>();
 
         for (IngredientReduceRequest r : ingredientReduceRequests) {
+
+            Integer use = r.getUseAmount();
+            if (use == null || use <= 0) continue; // null 방어 및 0 차감 스킵
+
             reduceMap.merge(r.getUserFoodId(), r.getUseAmount(), Integer::sum);
         }
+
+        if (reduceMap.isEmpty()) return;
 
         List<Ingredient> ingredients = ingredientRepository.findByUserAndIdIn(user, reduceMap.keySet());
 
