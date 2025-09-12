@@ -1,6 +1,6 @@
 package com.github.hurrcook.domain.ingredient.service;
 
-import com.github.hurrcook.domain.ingredient.IngredientRepository;
+import com.github.hurrcook.domain.ingredient.repository.IngredientRepository;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientReduceRequest;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;

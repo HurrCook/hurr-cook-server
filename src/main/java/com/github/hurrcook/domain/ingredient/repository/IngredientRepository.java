@@ -1,4 +1,4 @@
-package com.github.hurrcook.domain.ingredient;
+package com.github.hurrcook.domain.ingredient.repository;
 
 import com.github.hurrcook.domain.ingredient.entity.Ingredient;
 import com.github.hurrcook.domain.user.entity.User;
