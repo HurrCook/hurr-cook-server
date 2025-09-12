@@ -1,6 +1,9 @@
 package com.github.hurrcook.domain.ingredient.service;
 
-import com.github.hurrcook.domain.ingredient.IngredientRepository;
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientListRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseListRequest;
+import com.github.hurrcook.domain.ingredient.repository.IngredientRepository;
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseRequest;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.entity.Ingredient;
@@ -10,9 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,17 +25,44 @@ public class IngredientService {
     private final IngredientRepository ingredientRepository;
 
     @Transactional
-    public void addIngredient(User user, List<IngredientRequest> ingredientRequests) {
+    public void addIngredient(User user, IngredientListRequest ingredientRequests) {
 
         List<Ingredient> ingredients = new ArrayList<>();
 
-        for (IngredientRequest ingredientRequest : ingredientRequests) {
+        for (IngredientRequest ingredientRequest : ingredientRequests.getIngredients()) {
             ingredients.add(Ingredient.from(user, ingredientRequest));
 
         }
 
         ingredientRepository.saveAll(ingredients);
     }
+    
+
+    @Transactional
+    public void reduceIngredient(User user, IngredientUseListRequest ingredientUseListRequest) {
+
+
+        List<UUID> ingredientIds = ingredientUseListRequest.getIngredientUseList().stream().map(IngredientUseRequest::getUserFoodId).toList();
+        Map<UUID,Ingredient> ingredients = ingredientRepository.findByUserAndIdIn(user,ingredientIds).stream().collect(Collectors.toMap(Ingredient::getId, Function.identity()));
+
+        List<Ingredient> toDelete = new ArrayList<>();
+
+        for (IngredientUseRequest request : ingredientUseListRequest.getIngredientUseList()) {
+            Ingredient ingredient = ingredients.get(request.getUserFoodId());
+            int remain = ingredient.getAmount() - request.getUseAmount();
+
+            if (remain == 0){
+                toDelete.add(ingredient);
+            } else{
+                ingredient.setAmount(remain);
+            }
+        }
+
+        if (!toDelete.isEmpty()) {
+            ingredientRepository.deleteAllInBatch(toDelete);
+        }
+    }
+
 
     // 유저가 가진 모든 재료 조회
     @Transactional(readOnly = true)

@@ -1,6 +1,7 @@
 package com.github.hurrcook.domain.ingredient.controller;
 
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientListRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseListRequest;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.service.IngredientService;
 import com.github.hurrcook.domain.user.entity.User;
@@ -25,13 +26,22 @@ public class IngredientController {
 
     @PostMapping
     @Operation(summary = "재료 등록")
-    public ApiResponse<Void> addIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid List<IngredientRequest> ingredientRequests) {
+    public ApiResponse<Void> addIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid IngredientListRequest ingredientRequests) {
 
         ingredientService.addIngredient(user, ingredientRequests);
 
         return ApiResponse.ok();
     }
 
+    @PutMapping
+    @Operation(summary = "재료 차감")
+    public ApiResponse<Void> reduceIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid IngredientUseListRequest ingredientUseListRequest) {
+
+        ingredientService.reduceIngredient(user, ingredientUseListRequest);
+
+        return ApiResponse.ok();
+    }
+  
     @GetMapping()
     @Operation(summary = "재료 목록 조회")
     public ApiResponse<List<IngredientResponse>> getAllIngredients(@AuthenticationPrincipal User user) {
