@@ -1,7 +1,9 @@
 package com.github.hurrcook.domain.ingredient.service;
 
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientListRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseListRequest;
 import com.github.hurrcook.domain.ingredient.repository.IngredientRepository;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientReduceRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseRequest;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.entity.Ingredient;
@@ -13,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,11 +25,11 @@ public class IngredientService {
     private final IngredientRepository ingredientRepository;
 
     @Transactional
-    public void addIngredient(User user, List<IngredientRequest> ingredientRequests) {
+    public void addIngredient(User user, IngredientListRequest ingredientRequests) {
 
         List<Ingredient> ingredients = new ArrayList<>();
 
-        for (IngredientRequest ingredientRequest : ingredientRequests) {
+        for (IngredientRequest ingredientRequest : ingredientRequests.getIngredients()) {
             ingredients.add(Ingredient.from(user, ingredientRequest));
 
         }
@@ -35,35 +39,23 @@ public class IngredientService {
     
 
     @Transactional
-    public void reduceIngredient(User user, List<IngredientReduceRequest> ingredientReduceRequests) {
+    public void reduceIngredient(User user, IngredientUseListRequest ingredientUseListRequest) {
 
-        if (ingredientReduceRequests == null || ingredientReduceRequests.isEmpty()) {
-            return;
-        }
 
-        Map<UUID, Integer> reduceMap = new LinkedHashMap<>();
-
-        for (IngredientReduceRequest r : ingredientReduceRequests) {
-
-            Integer use = r.getUseAmount();
-            if (use == null || use <= 0) continue; // null 방어 및 0 차감 스킵
-
-            reduceMap.merge(r.getUserFoodId(), r.getUseAmount(), Integer::sum);
-        }
-
-        if (reduceMap.isEmpty()) return;
-
-        List<Ingredient> ingredients = ingredientRepository.findByUserAndIdIn(user, reduceMap.keySet());
+        List<UUID> ingredientIds = ingredientUseListRequest.getIngredientUseList().stream().map(IngredientUseRequest::getUserFoodId).toList();
+        Map<UUID,Ingredient> ingredients = ingredientRepository.findByUserAndIdIn(user,ingredientIds).stream().collect(Collectors.toMap(Ingredient::getId, Function.identity()));
 
         List<Ingredient> toDelete = new ArrayList<>();
 
-        for (Ingredient ing : ingredients) {
-            Integer deduct = reduceMap.remove(ing.getId());
-            if (deduct == null) continue;
+        for (IngredientUseRequest request : ingredientUseListRequest.getIngredientUseList()) {
+            Ingredient ingredient = ingredients.get(request.getUserFoodId());
+            int remain = ingredient.getAmount() - request.getUseAmount();
 
-            int after = ing.getAmount() - deduct;
-            if (after <= 0) toDelete.add(ing);
-            else ing.setAmount(after);
+            if (remain == 0){
+                toDelete.add(ingredient);
+            } else{
+                ingredient.setAmount(remain);
+            }
         }
 
         if (!toDelete.isEmpty()) {
