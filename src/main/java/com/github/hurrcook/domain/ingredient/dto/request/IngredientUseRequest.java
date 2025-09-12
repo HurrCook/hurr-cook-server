@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class IngredientReduceRequest {
+public class IngredientUseRequest {
 
     @NotNull
     @Schema(description = "음식 id")
