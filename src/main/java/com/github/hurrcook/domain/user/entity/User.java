@@ -1,6 +1,7 @@
 package com.github.hurrcook.domain.user.entity;
 
 import com.github.hurrcook.domain.cookware.entity.Cookware;
+import com.github.hurrcook.domain.ingredient.entity.Ingredient;
 import com.github.hurrcook.domain.recipe.entity.Recipe;
 import com.github.hurrcook.global.infra.BaseSchema;
 import jakarta.persistence.*;
@@ -28,4 +29,7 @@ public class User extends BaseSchema {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<Recipe> recipes;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true)
+    List<Ingredient>  ingredients;
 }
