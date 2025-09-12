@@ -2,6 +2,7 @@ package com.github.hurrcook.domain.auth.controller;
 
 import com.github.hurrcook.domain.auth.dto.request.RefreshTokenRequest;
 import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
+import com.github.hurrcook.domain.auth.dto.response.TokenResponse;
 import com.github.hurrcook.domain.auth.service.AuthService;
 import com.github.hurrcook.global.response.ApiResponse;
 import com.github.hurrcook.global.security.jwt.JwtUtil;
@@ -46,5 +47,14 @@ public class AuthController {
         String accessToken = jwtUtil.extractToken(request);
         authService.logout(accessToken,refreshTokenRequest.getRefreshToken());
         return ApiResponse.ok();
+    }
+
+    @PostMapping("/reissuance")
+    @Operation(summary = "토큰 재발급")
+    public ApiResponse<TokenResponse> reissuance(HttpServletRequest request, @Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+
+        String accessToken = jwtUtil.extractToken(request);
+
+        return ApiResponse.ok(authService.regenerateToken(accessToken,refreshTokenRequest.getRefreshToken()));
     }
 }

@@ -1,13 +1,11 @@
 package com.github.hurrcook.domain.auth.service;
 
-import com.github.hurrcook.domain.auth.dto.response.CheckLoginFirst;
-import com.github.hurrcook.domain.auth.dto.response.KakaoTokenResponse;
-import com.github.hurrcook.domain.auth.dto.response.KakaoUserInfoResponse;
-import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
+import com.github.hurrcook.domain.auth.dto.response.*;
 import com.github.hurrcook.domain.auth.entity.RefreshToken;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
 import com.github.hurrcook.domain.cookware.entity.Cookware;
 import com.github.hurrcook.domain.user.entity.User;
+import com.github.hurrcook.domain.user.exception.UserExceptions;
 import com.github.hurrcook.domain.user.repository.RefreshTokenRedisRepository;
 import com.github.hurrcook.domain.user.repository.UserRepository;
 import com.github.hurrcook.global.security.jwt.JwtUtil;
@@ -24,6 +22,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -86,16 +86,31 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenRedisRepository.findByRefreshToken(token).orElseThrow(AuthExceptions.INVALID_TOKEN::toApiException);
         refreshTokenRedisRepository.delete(refreshToken);
 
-        /* 액세스 토큰을 redis에 저장(blacked 상태) */
-        Instant expiration = jwtUtil.extractExpirationFromToken(accessToken); // 액세스 토큰 ttl
-        long remainingExpiration = expiration.toEpochMilli() - Instant.now().toEpochMilli(); // 남은 유효시간
+        addToBlacklist(accessToken);
 
-        // 남은 유효시간 만큼 블랙 리스트에 저장
-        if (remainingExpiration > 0) {
-            String key = "BLACKED_TOKEN" + accessToken;
-            String value = "blacklisted";
-            redisTemplate.opsForValue().set(key, value, Duration.ofMillis(remainingExpiration));
+    }
+    @Transactional
+    public TokenResponse regenerateToken(String accessToken,String refreshToken){
+
+        if(Objects.isNull(accessToken)){
+            throw AuthExceptions.INVALID_TOKEN.toApiException();
         }
+
+        RefreshToken redisRefreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshToken).orElseThrow(AuthExceptions.REFRESH_TOKEN_EXPIRED::toApiException);
+
+        UUID userId = jwtUtil.extractIdFromToken(accessToken);
+
+        if (!userId.toString().equals(redisRefreshToken.userId())){
+            throw AuthExceptions.TOKEN_NOT_PAIR.toApiException();
+        }
+
+        refreshTokenRedisRepository.delete(redisRefreshToken);
+        User user = userRepository.findById(userId).orElseThrow(UserExceptions.USER_NOT_FOUND::toApiException);
+
+        String newAccessToken = jwtUtil.createAccessToken(user);
+        String newRefreshToken = jwtUtil.createRefreshToken(user);
+
+        return TokenResponse.of(newAccessToken,newRefreshToken);
 
     }
 
@@ -179,6 +194,7 @@ public class AuthService {
             throw AuthExceptions.KAKAO_USERINFO_REQUEST_FAILED.toApiException();
         }
     }
+
     private User of(Long kakaoId, String name){
         User user = User.builder()
                 .kakaoId(kakaoId)
@@ -189,6 +205,20 @@ public class AuthService {
         user.setCookware(cookware);
 
         return userRepository.save(user);
+    }
+
+    private void addToBlacklist(String token){
+
+        /* 액세스 토큰을 redis에 저장(blacked 상태) */
+        Instant expiration = jwtUtil.extractExpirationFromToken(token); // 액세스 토큰 ttl
+        long remainingExpiration = expiration.toEpochMilli() - Instant.now().toEpochMilli(); // 남은 유효시간
+
+        // 남은 유효시간 만큼 블랙 리스트에 저장
+        if (remainingExpiration > 0) {
+            String key = "BLACKED_TOKEN" + token;
+            String value = "blacklisted";
+            redisTemplate.opsForValue().set(key, value, Duration.ofMillis(remainingExpiration));
+        }
     }
 
 }

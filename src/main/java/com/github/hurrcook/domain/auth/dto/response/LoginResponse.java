@@ -19,5 +19,5 @@ public class LoginResponse {
 
     @JsonProperty("refreshToken") private String refreshToken;
 
-    @JsonProperty("isFirstLogin") private boolean isFirstLogin;
+    @JsonProperty("firstLogin") private boolean firstLogin;
 }
