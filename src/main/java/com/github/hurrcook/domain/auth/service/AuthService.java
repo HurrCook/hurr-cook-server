@@ -22,6 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -90,6 +91,10 @@ public class AuthService {
     }
     @Transactional
     public TokenResponse regenerateToken(String accessToken,String refreshToken){
+
+        if(Objects.isNull(accessToken)){
+            throw AuthExceptions.INVALID_TOKEN.toApiException();
+        }
 
         RefreshToken redisRefreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshToken).orElseThrow(AuthExceptions.REFRESH_TOKEN_EXPIRED::toApiException);
 
