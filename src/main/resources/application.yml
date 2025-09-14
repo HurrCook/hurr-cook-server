@@ -41,3 +41,7 @@ app:
       client-id: ${REST_API_KEY}
       client-secret: ${CLIENT_SECRET}
       redirect-uri: ${REDIRECT_URI}
+
+
+firebase:
+  config: ${FIREBASE_CONFIG}
