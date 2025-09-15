@@ -1,9 +1,11 @@
 package com.github.hurrcook.domain.auth.controller;
 
+import com.github.hurrcook.domain.auth.dto.request.FcmTokenRequest;
 import com.github.hurrcook.domain.auth.dto.request.RefreshTokenRequest;
 import com.github.hurrcook.domain.auth.dto.response.LoginResponse;
 import com.github.hurrcook.domain.auth.dto.response.TokenResponse;
 import com.github.hurrcook.domain.auth.service.AuthService;
+import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.global.response.ApiResponse;
 import com.github.hurrcook.global.security.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,5 +59,13 @@ public class AuthController {
         String accessToken = jwtUtil.extractToken(request);
 
         return ApiResponse.ok(authService.regenerateToken(accessToken,refreshTokenRequest.getRefreshToken()));
+    }
+
+    @PostMapping("fcm")
+    @Operation(summary = "FCM 토큰 등록")
+    public ApiResponse<Void> uploadFcm (@AuthenticationPrincipal User user, @Valid @RequestBody FcmTokenRequest  fcmTokenRequest) {
+
+        authService.uploadFcm(user,fcmTokenRequest);
+        return ApiResponse.ok();
     }
 }

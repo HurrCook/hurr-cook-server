@@ -1,5 +1,6 @@
 package com.github.hurrcook.domain.auth.service;
 
+import com.github.hurrcook.domain.auth.dto.request.FcmTokenRequest;
 import com.github.hurrcook.domain.auth.dto.response.*;
 import com.github.hurrcook.domain.auth.entity.RefreshToken;
 import com.github.hurrcook.domain.auth.exception.AuthExceptions;
@@ -112,6 +113,13 @@ public class AuthService {
 
         return TokenResponse.of(newAccessToken,newRefreshToken);
 
+    }
+
+    @Transactional
+    public void uploadFcm(User user, FcmTokenRequest fcmTokenRequest){
+
+        user.setFcmToken(fcmTokenRequest.getFcmToken());
+        userRepository.save(user);
     }
 
 
