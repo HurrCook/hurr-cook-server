@@ -1,6 +1,7 @@
 package com.github.hurrcook.domain.ingredient.controller;
 
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientListRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientUpdateRequest;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseListRequest;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.service.IngredientService;
@@ -52,5 +53,12 @@ public class IngredientController {
     @Operation(summary = "단일 재료 조회")
     public ApiResponse<IngredientResponse> getIngredient(@AuthenticationPrincipal User user, @PathVariable UUID ingredientId) {
         return ApiResponse.ok(ingredientService.getIngredient(user, ingredientId));
+    }
+
+    @PutMapping("/{ingredientId}")
+    @Operation(summary = "재료 정보 수정")
+    public ApiResponse<Void> updateIngredient(@AuthenticationPrincipal User user, @PathVariable UUID ingredientId, @RequestBody @Valid IngredientUpdateRequest ingredientUpdateRequest) {
+        ingredientService.updateIngredient(user, ingredientId, ingredientUpdateRequest);
+        return ApiResponse.ok();
     }
 }
