@@ -45,10 +45,10 @@ public class AuthController {
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃", description = "사용자 세션 종료: 리프레시 토큰 삭제, 액세스 토큰 블랙리스트 처리")
-    public ApiResponse<Void> logout( HttpServletRequest request, @Valid @RequestBody RefreshTokenRequest refreshTokenRequest) { // 현재 액세스 토큰으로 요청
+    public ApiResponse<Void> logout(HttpServletRequest request, @Valid @RequestBody RefreshTokenRequest refreshTokenRequest) { // 현재 액세스 토큰으로 요청
 
         String accessToken = jwtUtil.extractToken(request);
-        authService.logout(accessToken,refreshTokenRequest.getRefreshToken());
+        authService.logout(accessToken, refreshTokenRequest.getRefreshToken());
         return ApiResponse.ok();
     }
 
@@ -58,14 +58,14 @@ public class AuthController {
 
         String accessToken = jwtUtil.extractToken(request);
 
-        return ApiResponse.ok(authService.regenerateToken(accessToken,refreshTokenRequest.getRefreshToken()));
+        return ApiResponse.ok(authService.regenerateToken(accessToken, refreshTokenRequest.getRefreshToken()));
     }
 
     @PostMapping("fcm")
     @Operation(summary = "FCM 토큰 등록")
-    public ApiResponse<Void> uploadFcm (@AuthenticationPrincipal User user, @Valid @RequestBody FcmTokenRequest  fcmTokenRequest) {
+    public ApiResponse<Void> uploadFcm(@AuthenticationPrincipal User user, @Valid @RequestBody FcmTokenRequest fcmTokenRequest) {
 
-        authService.uploadFcm(user,fcmTokenRequest);
+        authService.uploadFcm(user, fcmTokenRequest);
         return ApiResponse.ok();
     }
 }
