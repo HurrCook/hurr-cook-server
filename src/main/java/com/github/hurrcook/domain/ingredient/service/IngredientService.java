@@ -1,10 +1,8 @@
 package com.github.hurrcook.domain.ingredient.service;
 
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientListRequest;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseListRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.*;
+import com.github.hurrcook.domain.ingredient.dto.response.IngredientReduceResponse;
 import com.github.hurrcook.domain.ingredient.repository.IngredientRepository;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseRequest;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.entity.Ingredient;
 import com.github.hurrcook.domain.ingredient.exception.IngredientExceptions;
@@ -80,5 +78,51 @@ public class IngredientService {
                 .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
 
         return IngredientResponse.from(ingredient);
+    }
+
+    // 재료 차감 목록 불러오기
+    @Transactional(readOnly = true)
+    public List<IngredientReduceResponse> getUsageIngredient(User user, List<IngredientUseRequest> request) {
+        // 유저의 모든 재료 조회
+        Map<UUID, Ingredient> allUserIngredients = ingredientRepository.findAllByUser(user)
+                .stream()
+                .collect(Collectors.toMap(Ingredient::getId, ingredient -> ingredient));
+
+        // 보유하지 않은 재료 ID
+        Set<UUID> notOwnedIds = request.stream()
+                .map(IngredientUseRequest::getUserFoodId)
+                .filter(id -> !allUserIngredients.containsKey(id))
+                .collect(Collectors.toSet());
+
+        // 보유하지 않은 재료의 이름
+        Map<UUID, String> notOwnedNames = new HashMap<>();
+        if (!notOwnedIds.isEmpty()) {
+            notOwnedNames = ingredientRepository.findAllById(notOwnedIds)
+                    .stream()
+                    .collect(Collectors.toMap(Ingredient::getId, Ingredient::getName));
+        }
+
+        final Map<UUID, String> finalNotOwnedNames = notOwnedNames;
+
+        return request.stream() // 요청으로 받은 재료 리스트
+                .map(required -> {
+                    // 유저가 가진 재료 중에서 요청 받은 재료를 찾음
+                    Ingredient owned = allUserIngredients.get(required.getUserFoodId());
+
+                    if (owned == null){
+                        String foodName = finalNotOwnedNames.get(required.getUserFoodId());
+                        if (foodName == null) {
+                            throw IngredientExceptions.INGREDIENT_NOT_FOUND.toApiException();
+                        }
+                        return IngredientReduceResponse.fromNotOwned(required, foodName);
+                    }
+
+                    int currentAmount = owned.getAmount();
+                    boolean isSufficient = currentAmount >= required.getUseAmount();
+
+                    return IngredientReduceResponse.from(required, owned, currentAmount, isSufficient);
+
+                })
+                .collect(Collectors.toList());
     }
 }
