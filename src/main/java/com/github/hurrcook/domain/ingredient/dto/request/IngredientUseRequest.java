@@ -17,5 +17,5 @@ public class IngredientUseRequest {
     @NotNull
     @PositiveOrZero
     @Schema(description = "사용 수량")
-    Integer useAmount;
+    int useAmount;
 }
