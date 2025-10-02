@@ -1,10 +1,7 @@
 package com.github.hurrcook.domain.ingredient.service;
 
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientListRequest;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseListRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.*;
 import com.github.hurrcook.domain.ingredient.repository.IngredientRepository;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseRequest;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.entity.Ingredient;
 import com.github.hurrcook.domain.ingredient.exception.IngredientExceptions;
@@ -36,7 +33,7 @@ public class IngredientService {
 
         ingredientRepository.saveAll(ingredients);
     }
-    
+
 
     @Transactional
     public void reduceIngredient(User user, IngredientUseListRequest ingredientUseListRequest) {
@@ -82,6 +79,19 @@ public class IngredientService {
         return IngredientResponse.from(ingredient);
     }
 
+    @Transactional
+    public void updateIngredient(User user, UUID ingredientId, IngredientUpdateRequest ingredientUpdateRequest) {
+
+        Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
+                .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
+
+        ingredient.setName(ingredientUpdateRequest.getName());
+        ingredient.setAmount(ingredientUpdateRequest.getAmount());
+        ingredient.setExpireDate(ingredientUpdateRequest.getExpireDate());
+
+        ingredientRepository.save(ingredient);
+    }
+    
     @Transactional
     public void deleteIngredient(User user, UUID ingredientId) {
         Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
