@@ -42,7 +42,7 @@ public class IngredientController {
 
         return ApiResponse.ok();
     }
-  
+
     @GetMapping()
     @Operation(summary = "재료 목록 조회")
     public ApiResponse<List<IngredientResponse>> getAllIngredients(@AuthenticationPrincipal User user) {
@@ -53,6 +53,13 @@ public class IngredientController {
     @Operation(summary = "단일 재료 조회")
     public ApiResponse<IngredientResponse> getIngredient(@AuthenticationPrincipal User user, @PathVariable UUID ingredientId) {
         return ApiResponse.ok(ingredientService.getIngredient(user, ingredientId));
+    }
+
+    @DeleteMapping("/{ingredientId}")
+    @Operation(summary = "재료 삭제")
+    public ApiResponse<Void> deleteIngredient(@AuthenticationPrincipal User user, @PathVariable UUID ingredientId) {
+        ingredientService.deleteIngredient(user, ingredientId);
+        return ApiResponse.ok();
     }
 
     @PutMapping("/{ingredientId}")

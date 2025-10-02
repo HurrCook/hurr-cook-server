@@ -33,7 +33,7 @@ public class IngredientService {
 
         ingredientRepository.saveAll(ingredients);
     }
-    
+
 
     @Transactional
     public void reduceIngredient(User user, IngredientUseListRequest ingredientUseListRequest) {
@@ -90,5 +90,13 @@ public class IngredientService {
         ingredient.setExpireDate(ingredientUpdateRequest.getExpireDate());
 
         ingredientRepository.save(ingredient);
+    }
+    
+    @Transactional
+    public void deleteIngredient(User user, UUID ingredientId) {
+        Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
+                .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
+
+        ingredientRepository.delete(ingredient);
     }
 }
