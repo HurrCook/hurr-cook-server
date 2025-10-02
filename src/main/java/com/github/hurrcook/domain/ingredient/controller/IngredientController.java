@@ -1,6 +1,7 @@
 package com.github.hurrcook.domain.ingredient.controller;
 
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientListRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.IngredientUpdateRequest;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseListRequest;
 import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseRequest;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
@@ -49,7 +50,7 @@ public class IngredientController {
 
         return ApiResponse.ok();
     }
-  
+
     @GetMapping()
     @Operation(summary = "재료 목록 조회")
     public ApiResponse<List<IngredientResponse>> getAllIngredients(@AuthenticationPrincipal User user) {
@@ -60,5 +61,19 @@ public class IngredientController {
     @Operation(summary = "단일 재료 조회")
     public ApiResponse<IngredientResponse> getIngredient(@AuthenticationPrincipal User user, @PathVariable UUID ingredientId) {
         return ApiResponse.ok(ingredientService.getIngredient(user, ingredientId));
+    }
+
+    @DeleteMapping("/{ingredientId}")
+    @Operation(summary = "재료 삭제")
+    public ApiResponse<Void> deleteIngredient(@AuthenticationPrincipal User user, @PathVariable UUID ingredientId) {
+        ingredientService.deleteIngredient(user, ingredientId);
+        return ApiResponse.ok();
+    }
+
+    @PutMapping("/{ingredientId}")
+    @Operation(summary = "재료 정보 수정")
+    public ApiResponse<Void> updateIngredient(@AuthenticationPrincipal User user, @PathVariable UUID ingredientId, @RequestBody @Valid IngredientUpdateRequest ingredientUpdateRequest) {
+        ingredientService.updateIngredient(user, ingredientId, ingredientUpdateRequest);
+        return ApiResponse.ok();
     }
 }

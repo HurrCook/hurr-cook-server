@@ -1,7 +1,6 @@
 package com.github.hurrcook.domain.ingredient.service;
 
 import com.github.hurrcook.domain.ingredient.dto.request.*;
-import com.github.hurrcook.domain.ingredient.dto.response.IngredientReduceResponse;
 import com.github.hurrcook.domain.ingredient.repository.IngredientRepository;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.entity.Ingredient;
@@ -34,7 +33,7 @@ public class IngredientService {
 
         ingredientRepository.saveAll(ingredients);
     }
-    
+
 
     @Transactional
     public void reduceIngredient(User user, IngredientUseListRequest ingredientUseListRequest) {
@@ -71,6 +70,7 @@ public class IngredientService {
                 .toList();
     }
 
+  
     // 유저가 가진 단일 재료 조회
     @Transactional(readOnly = true)
     public IngredientResponse getIngredient(User user, UUID ingredientId) {
@@ -80,6 +80,7 @@ public class IngredientService {
         return IngredientResponse.from(ingredient);
     }
 
+  
     // 재료 차감 목록 불러오기
     @Transactional(readOnly = true)
     public List<IngredientReduceResponse> getUsageIngredient(User user, List<IngredientUseRequest> request) {
@@ -124,5 +125,27 @@ public class IngredientService {
 
                 })
                 .collect(Collectors.toList());
+
+  
+    @Transactional
+    public void updateIngredient(User user, UUID ingredientId, IngredientUpdateRequest ingredientUpdateRequest) {
+
+        Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
+                .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
+
+        ingredient.setName(ingredientUpdateRequest.getName());
+        ingredient.setAmount(ingredientUpdateRequest.getAmount());
+        ingredient.setExpireDate(ingredientUpdateRequest.getExpireDate());
+
+        ingredientRepository.save(ingredient);
+    }
+    
+      
+    @Transactional
+    public void deleteIngredient(User user, UUID ingredientId) {
+        Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
+                .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
+
+        ingredientRepository.delete(ingredient);
     }
 }
