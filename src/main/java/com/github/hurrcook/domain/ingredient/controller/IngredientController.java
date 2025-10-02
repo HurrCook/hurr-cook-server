@@ -53,4 +53,11 @@ public class IngredientController {
     public ApiResponse<IngredientResponse> getIngredient(@AuthenticationPrincipal User user, @PathVariable UUID ingredientId) {
         return ApiResponse.ok(ingredientService.getIngredient(user, ingredientId));
     }
+
+    @DeleteMapping("/{ingredientId}")
+    @Operation(summary = "재료 삭제")
+    public ApiResponse<Void> deleteIngredient(@AuthenticationPrincipal User user, @PathVariable UUID ingredientId) {
+        ingredientService.deleteIngredient(user, ingredientId);
+        return ApiResponse.ok();
+    }
 }

@@ -81,4 +81,12 @@ public class IngredientService {
 
         return IngredientResponse.from(ingredient);
     }
+
+    @Transactional
+    public void deleteIngredient(User user, UUID ingredientId) {
+        Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
+                .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
+
+        ingredientRepository.delete(ingredient);
+    }
 }
