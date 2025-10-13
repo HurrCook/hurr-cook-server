@@ -36,8 +36,8 @@ public class IngredientController {
         return ApiResponse.ok();
     }
 
-    @GetMapping("/usage")
-    @Operation(summary = "재료 차감 목록 불러오기(레시피로 요리하기 요청하여 필요한 재료 정보를 담아 보내고, 응답 받음")
+    @PostMapping("/usage")
+    @Operation(summary = "재료 차감 목록 불러오기(레시피로 요리하기 요청하여 필요한 재료 정보를 담아 보내고, 응답 받음)")
     public ApiResponse<List<IngredientReduceResponse>> getUsageIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid List<IngredientUseRequest> request){
         return ApiResponse.ok(ingredientService.getUsageIngredient(user, request));
     }
