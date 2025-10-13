@@ -40,15 +40,4 @@ public class IngredientReduceResponse {
                 .sufficient(sufficient)
                 .build();
     }
-
-    public static IngredientReduceResponse fromNotOwned(IngredientUseRequest request, String foodName) {
-        return IngredientReduceResponse.builder()
-                .userFoodId(request.getUserFoodId())
-                .name(foodName)
-                .useAmount(request.getUseAmount())
-                .currentAmount(0)
-                .expireDate(null)
-                .sufficient(false)
-                .build();
-    }
 }

@@ -89,34 +89,12 @@ public class IngredientService {
                 .stream()
                 .collect(Collectors.toMap(Ingredient::getId, ingredient -> ingredient));
 
-        // 보유하지 않은 재료 ID
-        Set<UUID> notOwnedIds = request.stream()
-                .map(IngredientUseRequest::getUserFoodId)
-                .filter(id -> !allUserIngredients.containsKey(id))
-                .collect(Collectors.toSet());
-
-        // 보유하지 않은 재료의 이름
-        Map<UUID, String> notOwnedNames = new HashMap<>();
-        if (!notOwnedIds.isEmpty()) {
-            notOwnedNames = ingredientRepository.findAllById(notOwnedIds)
-                    .stream()
-                    .collect(Collectors.toMap(Ingredient::getId, Ingredient::getName));
-        }
-
-        final Map<UUID, String> finalNotOwnedNames = notOwnedNames;
-
         return request.stream() // 요청으로 받은 재료 리스트
                 .map(required -> {
                     // 유저가 가진 재료 중에서 요청 받은 재료를 찾음
                     Ingredient owned = allUserIngredients.get(required.getUserFoodId());
 
-                    if (owned == null){
-                        String foodName = finalNotOwnedNames.get(required.getUserFoodId());
-                        if (foodName == null) {
-                            throw IngredientExceptions.INGREDIENT_NOT_FOUND.toApiException();
-                        }
-                        return IngredientReduceResponse.fromNotOwned(required, foodName);
-                    }
+                    if (owned == null)  return null;
 
                     int currentAmount = owned.getAmount();
                     boolean isSufficient = currentAmount >= required.getUseAmount();
