@@ -1,9 +1,6 @@
 package com.github.hurrcook.domain.ingredient.controller;
 
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientListRequest;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientUpdateRequest;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseListRequest;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.*;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientReduceResponse;
 import com.github.hurrcook.domain.ingredient.service.IngredientService;
@@ -38,7 +35,7 @@ public class IngredientController {
 
     @PostMapping("/usage")
     @Operation(summary = "재료 차감 목록 불러오기(레시피로 요리하기 요청하여 필요한 재료 정보를 담아 보내고, 응답 받음)")
-    public ApiResponse<List<IngredientReduceResponse>> getUsageIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid List<IngredientUseRequest> request){
+    public ApiResponse<List<IngredientReduceResponse>> getUsageIngredient(@AuthenticationPrincipal User user, @RequestBody @Valid List<IngredientUseCheckRequest> request){
         return ApiResponse.ok(ingredientService.getUsageIngredient(user, request));
     }
 
