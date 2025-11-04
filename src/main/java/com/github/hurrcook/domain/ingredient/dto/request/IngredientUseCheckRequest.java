@@ -8,11 +8,11 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class IngredientUseRequest {
+public class IngredientUseCheckRequest {
 
     @NotNull
-    @Schema(description = "음식 id")
-    UUID userFoodId;
+    @Schema(description = "음식 재료명")
+    String name;
 
     @NotNull
     @PositiveOrZero
