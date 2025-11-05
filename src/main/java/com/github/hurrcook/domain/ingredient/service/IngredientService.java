@@ -1,10 +1,8 @@
 package com.github.hurrcook.domain.ingredient.service;
 
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientListRequest;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseListRequest;
+import com.github.hurrcook.domain.ingredient.dto.request.*;
+import com.github.hurrcook.domain.ingredient.dto.response.IngredientReduceResponse;
 import com.github.hurrcook.domain.ingredient.repository.IngredientRepository;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientUseRequest;
-import com.github.hurrcook.domain.ingredient.dto.request.IngredientRequest;
 import com.github.hurrcook.domain.ingredient.dto.response.IngredientResponse;
 import com.github.hurrcook.domain.ingredient.entity.Ingredient;
 import com.github.hurrcook.domain.ingredient.exception.IngredientExceptions;
@@ -17,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +35,7 @@ public class IngredientService {
 
         ingredientRepository.saveAll(ingredients);
     }
-    
+
 
     @Transactional
     public void reduceIngredient(User user, IngredientUseListRequest ingredientUseListRequest) {
@@ -73,6 +72,7 @@ public class IngredientService {
                 .toList();
     }
 
+  
     // 유저가 가진 단일 재료 조회
     @Transactional(readOnly = true)
     public IngredientResponse getIngredient(User user, UUID ingredientId) {
@@ -80,5 +80,91 @@ public class IngredientService {
                 .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
 
         return IngredientResponse.from(ingredient);
+    }
+
+  
+    // 재료 차감 목록 불러오기
+    @Transactional(readOnly = true)
+    public List<IngredientReduceResponse> getUsageIngredient(User user, List<IngredientUseCheckRequest> requests) {
+        return requests.stream()
+                .flatMap(required -> {
+                    String name = required.getName();
+                    int remaining = required.getUseAmount(); // 필요 재료량 상태
+
+                    // 유저가 가진 동일 이름의 재료를 유통기한 오름차순으로 조회
+                    List<Ingredient> ownedIngredients = ingredientRepository.findAllByUserAndName(user, name)
+                            .stream()
+                            .sorted(Comparator.comparing(Ingredient::getExpireDate))
+                            .collect(Collectors.toList());
+
+                    // 재료가 하나도 없는 경우
+                    if (ownedIngredients.isEmpty()) {
+                        return Stream.of(IngredientReduceResponse.builder()
+                                .userFoodId(null)
+                                .name(name)
+                                .useAmount(required.getUseAmount())
+                                .currentAmount(0)
+                                .expireDate(null)
+                                .sufficient(false)
+                                .build());
+                    }
+
+                    List<IngredientReduceResponse> result = new ArrayList<>();
+
+                    // 유통기한 빠른 재료부터 먼저 사용 가능한지 확인
+                    for (Ingredient ingredient : ownedIngredients) {
+                        if (remaining <= 0) break; // 더 이상 차감 필요 없음
+
+                        int available = ingredient.getAmount(); // 기존 db 재료가 가진 양
+                        int used = Math.min(available, remaining);
+                        remaining -= used;
+
+                        result.add(IngredientReduceResponse.builder()
+                                .userFoodId(ingredient.getId())
+                                .name(ingredient.getName())
+                                .useAmount(used)
+                                .currentAmount(ingredient.getAmount())
+                                .expireDate(ingredient.getExpireDate())
+                                .sufficient(true)
+                                .build());
+                    }
+
+                    // 남은 양이 있으면 재료 부족 처리
+                    if (remaining > 0) {
+                        // 마지막 항목에 부족 상태 표시
+                        result.add(IngredientReduceResponse.builder()
+                                .userFoodId(null)
+                                .name(name)
+                                .useAmount(remaining)
+                                .currentAmount(0)
+                                .expireDate(null)
+                                .sufficient(false)
+                                .build());
+                    }
+
+                    return result.stream();
+                })
+                .toList();
+    }
+
+    @Transactional
+    public void deleteIngredient(User user, UUID ingredientId) {
+        Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
+                .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
+
+        ingredientRepository.delete(ingredient);
+    }
+
+    @Transactional
+    public void updateIngredient(User user, UUID ingredientId, IngredientUpdateRequest ingredientUpdateRequest) {
+
+        Ingredient ingredient = ingredientRepository.findByIdAndUser(ingredientId, user)
+                .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
+
+        ingredient.setName(ingredientUpdateRequest.getName());
+        ingredient.setAmount(ingredientUpdateRequest.getAmount());
+        ingredient.setExpireDate(ingredientUpdateRequest.getExpireDate());
+
+        ingredientRepository.save(ingredient);
     }
 }

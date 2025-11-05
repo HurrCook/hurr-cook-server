@@ -12,5 +12,6 @@ public interface IngredientRepository extends JpaRepository<Ingredient, UUID> {
     
     List<Ingredient> findAllByUser(User user);
     Optional<Ingredient> findByIdAndUser(UUID ingredientId, User user);
+    List<Ingredient> findAllByUserAndName(User user, String name);
     List<Ingredient> findByUserAndIdIn(User user, List<UUID> ingredientIds);
 }
