@@ -4,6 +4,7 @@ import com.github.hurrcook.domain.user.entity.User;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -12,5 +13,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByKakaoId(Long kakaoId);
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.ingredients WHERE u.id = :userId")
-    User findByIdWithIngredients(@NotNull UUID id);
+    User findByIdWithIngredients(@Param("userId") @NotNull UUID id);
 }
