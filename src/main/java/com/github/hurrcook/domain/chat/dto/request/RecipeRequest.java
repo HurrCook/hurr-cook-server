@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 public class RecipeRequest {
 
-    private String prompt;
+    private String user_query;
 
     private List<IngredientItem> ingredients;
 }

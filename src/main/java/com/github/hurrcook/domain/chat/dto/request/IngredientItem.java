@@ -13,11 +13,11 @@ public class IngredientItem {
 
     private String ingredient;
 
-    private int quantity;
+    private double quantity;
 
     private Unit unit;
 
-    private String expirationDate;
+    private String expiration_date;
 
     public static IngredientItem from(Ingredient ingredient) {
 
@@ -25,7 +25,7 @@ public class IngredientItem {
                 .ingredient(ingredient.getName())
                 .quantity(ingredient.getAmount())
                 .unit(ingredient.getUnit())
-                .expirationDate(ingredient.getExpireDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
+                .expiration_date(ingredient.getExpireDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
                 .build();
     }
 }

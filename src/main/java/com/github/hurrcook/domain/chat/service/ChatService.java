@@ -27,7 +27,7 @@ public class ChatService {
         User currentUser = userRepository.findByIdWithIngredients(user.getId());
 
         RecipeRequest recipeRequest = RecipeRequest.builder()
-                .prompt(promptRequest.getMessage())
+                .user_query(promptRequest.getMessage())
                 .ingredients(currentUser.getIngredients().stream().map(IngredientItem::from).toList())
                 .build();
 
