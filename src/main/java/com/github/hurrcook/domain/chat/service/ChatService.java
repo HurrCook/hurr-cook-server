@@ -4,31 +4,33 @@ import com.github.hurrcook.domain.chat.dto.request.IngredientItem;
 import com.github.hurrcook.domain.chat.dto.request.PromptRequest;
 import com.github.hurrcook.domain.chat.dto.request.RecipeRequest;
 import com.github.hurrcook.domain.chat.dto.response.LlmResponse;
-import com.github.hurrcook.domain.ingredient.entity.Ingredient;
 import com.github.hurrcook.domain.user.entity.User;
+import com.github.hurrcook.domain.user.repository.UserRepository;
 import com.github.hurrcook.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
     private final WebClient webClient;
+    private final UserRepository userRepository;
 
+    @Transactional
     public LlmResponse RecommendRecipe(PromptRequest promptRequest, User user) {
 
-        List<Ingredient> ingredients = user.getIngredients();
+
+        User currentUser = userRepository.findByIdWithIngredients(user.getId());
 
         RecipeRequest recipeRequest = RecipeRequest.builder()
                 .prompt(promptRequest.getMessage())
-                .ingredients(ingredients.stream().map(IngredientItem::from).toList())
+                .ingredients(currentUser.getIngredients().stream().map(IngredientItem::from).toList())
                 .build();
 
         try {
