@@ -8,12 +8,10 @@ import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.domain.user.repository.UserRepository;
 import com.github.hurrcook.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -35,14 +33,10 @@ public class ChatService {
 
         try {
             LlmResponse response = webClient.post()
-                    .uri("/recommend")
+                    .uri("/llm/recommend")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(recipeRequest)
                     .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
-                            Mono.error(new RuntimeException("AI 서버 요청 오류")))
-                    .onStatus(HttpStatusCode::is5xxServerError, clientResponse ->
-                            Mono.error(new RuntimeException("AI 서버 내부 오류")))
                     .bodyToMono(LlmResponse.class)
                     .block();
 
