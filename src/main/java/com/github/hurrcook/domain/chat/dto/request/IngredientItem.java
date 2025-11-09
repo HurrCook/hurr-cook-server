@@ -1,7 +1,6 @@
 package com.github.hurrcook.domain.chat.dto.request;
 
 import com.github.hurrcook.domain.ingredient.entity.Ingredient;
-import com.github.hurrcook.global.common.Unit;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,7 +14,7 @@ public class IngredientItem {
 
     private double quantity;
 
-    private Unit unit;
+    private String unit;
 
     private String expiration_date;
 
@@ -24,7 +23,7 @@ public class IngredientItem {
         return IngredientItem.builder()
                 .ingredient(ingredient.getName())
                 .quantity(ingredient.getAmount())
-                .unit(ingredient.getUnit())
+                .unit(ingredient.getUnit().name())
                 .expiration_date(ingredient.getExpireDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
                 .build();
     }
