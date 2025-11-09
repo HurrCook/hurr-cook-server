@@ -1,9 +1,11 @@
 package com.github.hurrcook.domain.chat.service;
 
 import com.github.hurrcook.domain.chat.dto.request.IngredientItem;
+import com.github.hurrcook.domain.chat.dto.request.OcrRequest;
 import com.github.hurrcook.domain.chat.dto.request.PromptRequest;
 import com.github.hurrcook.domain.chat.dto.request.RecipeRequest;
 import com.github.hurrcook.domain.chat.dto.response.LlmResponse;
+import com.github.hurrcook.domain.chat.dto.response.OcrResponse;
 import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.domain.user.repository.UserRepository;
 import com.github.hurrcook.global.exception.ApiException;
@@ -16,7 +18,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
-
     private final WebClient webClient;
     private final UserRepository userRepository;
 
@@ -46,4 +47,23 @@ public class ChatService {
             throw new ApiException(e.getMessage());
         }
     }
+
+    // ai서버로 string 전달 -> 응답 반환
+    @Transactional
+    public OcrResponse analyzeOcr(OcrRequest ocrRequest) {
+        try {
+            OcrResponse response = webClient.post()
+                    .uri("/ocr-receipt/")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(ocrRequest)
+                    .retrieve()
+                    .bodyToMono(OcrResponse.class)
+                    .block();
+
+            return response;
+        } catch (Exception e) {
+            throw new ApiException(e.getMessage());
+        }
+    }
+
 }
