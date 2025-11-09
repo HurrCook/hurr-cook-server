@@ -43,3 +43,5 @@ app:
       client-id: ${REST_API_KEY}
       client-secret: ${CLIENT_SECRET}
       redirect-uri: ${REDIRECT_URI}
+fastApi:
+  url: ${FAST_SERVER_URL}
