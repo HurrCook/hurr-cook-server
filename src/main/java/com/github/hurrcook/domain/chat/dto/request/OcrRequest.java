@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class OcrRequest {
-    @Schema(name = "ocr 인식 이미지 인코딩 문자열")
+    @Schema(description = "ocr 인식 이미지 인코딩 문자열")
     private String base64_str;
 }

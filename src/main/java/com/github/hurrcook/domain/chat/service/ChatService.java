@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
+
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -58,6 +60,7 @@ public class ChatService {
                     .bodyValue(ocrRequest)
                     .retrieve()
                     .bodyToMono(OcrResponse.class)
+                    .timeout(Duration.ofSeconds(30))
                     .block();
 
             return response;
