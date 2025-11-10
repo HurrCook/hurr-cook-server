@@ -31,6 +31,9 @@ spring:
           max-idle: 8
           min-idle: 0
           max-wait: 3000ms
+  http:
+    codecs:
+      max-in-memory-size: 10MB
 
 app:
   jwt:
