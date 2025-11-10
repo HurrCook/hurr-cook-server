@@ -17,7 +17,7 @@ public class LlmResponse {
     private String category;
 
     @Schema(name = "레시피 종류")
-    private String cuisineType;
+    private String cuisine_type;
 
     @Schema(name = "필요 재료")
     private List<SimpleIngredientResponse> ingredients;
