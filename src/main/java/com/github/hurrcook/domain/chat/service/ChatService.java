@@ -1,21 +1,21 @@
 package com.github.hurrcook.domain.chat.service;
 
+import com.github.hurrcook.domain.chat.dto.request.ImageRequest;
 import com.github.hurrcook.domain.chat.dto.request.IngredientItem;
-import com.github.hurrcook.domain.chat.dto.request.OcrRequest;
 import com.github.hurrcook.domain.chat.dto.request.PromptRequest;
 import com.github.hurrcook.domain.chat.dto.request.RecipeRequest;
 import com.github.hurrcook.domain.chat.dto.response.LlmResponse;
 import com.github.hurrcook.domain.chat.dto.response.OcrResponse;
+import com.github.hurrcook.domain.chat.dto.response.YoloResponse;
 import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.domain.user.repository.UserRepository;
 import com.github.hurrcook.global.exception.ApiException;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +25,6 @@ public class ChatService {
 
     @Transactional
     public LlmResponse RecommendRecipe(PromptRequest promptRequest, User user) {
-
 
         User currentUser = userRepository.findByIdWithIngredients(user.getId());
 
@@ -52,14 +51,32 @@ public class ChatService {
 
     // ai서버로 string 전달 -> 응답 반환
     @Transactional
-    public OcrResponse analyzeOcr(OcrRequest ocrRequest) {
+    public OcrResponse analyzeOcr(ImageRequest imageRequest) {
         try {
             OcrResponse response = webClient.post()
                     .uri("/ocr/ocr-receipt/")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(ocrRequest)
+                    .bodyValue(imageRequest)
                     .retrieve()
                     .bodyToMono(OcrResponse.class)
+                    .timeout(Duration.ofSeconds(30))
+                    .block();
+
+            return response;
+        } catch (Exception e) {
+            throw new ApiException(e.getMessage());
+        }
+    }
+
+    @Transactional
+    public YoloResponse analyzeYolo(ImageRequest imageRequest) {
+        try {
+            YoloResponse response = webClient.post()
+                    .uri("/yolo/detect-base64/")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(imageRequest)
+                    .retrieve()
+                    .bodyToMono(YoloResponse.class)
                     .timeout(Duration.ofSeconds(30))
                     .block();
 
