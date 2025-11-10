@@ -11,5 +11,8 @@ public class RecipeRequest {
 
     private String user_query;
 
+    @Builder.Default
+    private String personal_preferences = null;
+
     private List<IngredientItem> ingredients;
 }
