@@ -55,7 +55,7 @@ public class ChatService {
     public OcrResponse analyzeOcr(OcrRequest ocrRequest) {
         try {
             OcrResponse response = webClient.post()
-                    .uri("/ocr-receipt/")
+                    .uri("/ocr/ocr-receipt/")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(ocrRequest)
                     .retrieve()
