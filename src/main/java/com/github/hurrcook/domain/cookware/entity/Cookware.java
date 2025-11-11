@@ -3,8 +3,21 @@ package com.github.hurrcook.domain.cookware.entity;
 import com.github.hurrcook.domain.cookware.dto.request.CookwareRequest;
 import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.global.infra.BaseSchema;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -21,28 +34,36 @@ public class Cookware extends BaseSchema {
     private User user;
 
     @Column(nullable = false)
-    @Builder.Default private boolean hasPot = false;
+    @Builder.Default
+    private boolean hasPot = false;
 
     @Column(nullable = false)
-    @Builder.Default private boolean hasPan = false;
+    @Builder.Default
+    private boolean hasPan = false;
 
     @Column(nullable = false)
-    @Builder.Default private boolean hasCooker = false;
+    @Builder.Default
+    private boolean hasCooker = false;
 
     @Column(nullable = false)
-    @Builder.Default private boolean hasSteamer = false;
+    @Builder.Default
+    private boolean hasSteamer = false;
 
     @Column(nullable = false)
-    @Builder.Default private boolean hasOven = false;
+    @Builder.Default
+    private boolean hasOven = false;
 
     @Column(nullable = false)
-    @Builder.Default private boolean hasMicro = false;
+    @Builder.Default
+    private boolean hasMicro = false;
 
     @Column(nullable = false)
-    @Builder.Default private boolean hasToaster = false;
+    @Builder.Default
+    private boolean hasToaster = false;
 
     @Column(nullable = false)
-    @Builder.Default private boolean hasAirFryer = false;
+    @Builder.Default
+    private boolean hasAirFryer = false;
 
     public void updateCookwareFromRequest(CookwareRequest request) {
         this.hasPot = request.isHasPot();
@@ -53,5 +74,36 @@ public class Cookware extends BaseSchema {
         this.hasMicro = request.isHasMicro();
         this.hasToaster = request.isHasToaster();
         this.hasAirFryer = request.isHasAirFryer();
+    }
+
+    public List<String> getAvailableToolNames() {
+        List<String> tools = new ArrayList<>();
+
+        if (hasPot) {
+            tools.add("냄비");
+        }
+        if (hasPan) {
+            tools.add("프라이팬");
+        }
+        if (hasCooker) {
+            tools.add("밥솥");
+        }
+        if (hasSteamer) {
+            tools.add("찜기");
+        }
+        if (hasOven) {
+            tools.add("오븐");
+        }
+        if (hasMicro) {
+            tools.add("전자레인지");
+        }
+        if (hasToaster) {
+            tools.add("토스터");
+        }
+        if (hasAirFryer) {
+            tools.add("에어프라이어");
+        }
+
+        return tools;
     }
 }

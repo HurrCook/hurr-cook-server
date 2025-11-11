@@ -7,6 +7,7 @@ import com.github.hurrcook.domain.chat.dto.request.RecipeRequest;
 import com.github.hurrcook.domain.chat.dto.response.LlmResponse;
 import com.github.hurrcook.domain.chat.dto.response.OcrResponse;
 import com.github.hurrcook.domain.chat.dto.response.YoloResponse;
+import com.github.hurrcook.domain.cookware.entity.Cookware;
 import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.domain.user.repository.UserRepository;
 import com.github.hurrcook.global.exception.ApiException;
@@ -27,10 +28,12 @@ public class ChatService {
     public LlmResponse RecommendRecipe(PromptRequest promptRequest, User user) {
 
         User currentUser = userRepository.findByIdWithIngredients(user.getId());
+        Cookware cookware = currentUser.getCookware();
 
         RecipeRequest recipeRequest = RecipeRequest.builder()
                 .user_query(promptRequest.getMessage())
                 .ingredients(currentUser.getIngredients().stream().map(IngredientItem::from).toList())
+                .tools(cookware.getAvailableToolNames())
                 .build();
 
         try {
