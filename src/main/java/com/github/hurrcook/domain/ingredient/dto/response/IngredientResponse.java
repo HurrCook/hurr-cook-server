@@ -17,6 +17,9 @@ public class IngredientResponse {
     @Schema(description = "재료명")
     String name;
 
+    @Schema(description = "재료 이미지")
+    String imageUrl;
+
     @Schema(description = "재료의 양")
     int amount;
 
@@ -30,6 +33,7 @@ public class IngredientResponse {
         return IngredientResponse.builder()
                 .userFoodId(ingredient.getId())
                 .name(ingredient.getName())
+                .imageUrl(ingredient.getImageUrl())
                 .amount(ingredient.getAmount())
                 .expireDate(ingredient.getExpireDate())
                 .unit(ingredient.getUnit())

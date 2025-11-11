@@ -17,6 +17,9 @@ public class IngredientReduceResponse {
     @Schema(description = "재료명")
     private String name;
 
+    @Schema(description = "재료 이미지")
+    String imageUrl;
+
     @Schema(description = "레시피에 필요한 재료 수량")
     private int useAmount;
 
@@ -34,6 +37,7 @@ public class IngredientReduceResponse {
         return IngredientReduceResponse.builder()
                 .userFoodId(request.getUserFoodId())
                 .name(ingredient.getName())
+                .imageUrl(ingredient.getImageUrl())
                 .useAmount(request.getUseAmount())
                 .currentAmount(currentAmount)
                 .expireDate(ingredient.getExpireDate())
