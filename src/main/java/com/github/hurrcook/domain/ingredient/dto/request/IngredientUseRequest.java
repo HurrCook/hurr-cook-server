@@ -14,9 +14,6 @@ public class IngredientUseRequest {
     @Schema(description = "음식 id")
     UUID userFoodId;
 
-    @Schema(description = "재료 이미지")
-    String imageUrl;
-
     @NotNull
     @PositiveOrZero
     @Schema(description = "사용 수량")
