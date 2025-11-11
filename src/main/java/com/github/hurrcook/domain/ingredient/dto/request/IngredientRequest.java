@@ -25,6 +25,9 @@ public class IngredientRequest {
     @Schema(description = "재료 단위")
     Unit unit;
 
+    @Schema(description = "재료 이미지")
+    String imageUrl;
+
     @NotNull
     @Schema(description = "유통기한")
     LocalDateTime expireDate;

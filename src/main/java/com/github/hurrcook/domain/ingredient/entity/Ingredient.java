@@ -27,6 +27,8 @@ public class Ingredient extends BaseSchema {
     @Column(nullable = false)
     int amount;
 
+    String imageUrl;
+
     @Column(nullable = false)
     LocalDateTime expireDate;
 
@@ -38,6 +40,7 @@ public class Ingredient extends BaseSchema {
         return Ingredient.builder()
                 .user(user)
                 .name(request.getName())
+                .imageUrl(request.getImageUrl())
                 .amount(request.getAmount())
                 .expireDate(request.getExpireDate())
                 .unit(request.getUnit())

@@ -102,6 +102,7 @@ public class IngredientService {
                         return Stream.of(IngredientReduceResponse.builder()
                                 .userFoodId(null)
                                 .name(name)
+                                .imageUrl(null)
                                 .useAmount(required.getUseAmount())
                                 .currentAmount(0)
                                 .expireDate(null)
@@ -122,6 +123,7 @@ public class IngredientService {
                         result.add(IngredientReduceResponse.builder()
                                 .userFoodId(ingredient.getId())
                                 .name(ingredient.getName())
+                                .imageUrl(ingredient.getImageUrl())
                                 .useAmount(used)
                                 .currentAmount(ingredient.getAmount())
                                 .expireDate(ingredient.getExpireDate())
@@ -162,6 +164,7 @@ public class IngredientService {
                 .orElseThrow(IngredientExceptions.INGREDIENT_NOT_FOUND::toApiException);
 
         ingredient.setName(ingredientUpdateRequest.getName());
+        ingredient.setImageUrl(ingredientUpdateRequest.getImageUrl());
         ingredient.setAmount(ingredientUpdateRequest.getAmount());
         ingredient.setExpireDate(ingredientUpdateRequest.getExpireDate());
 
