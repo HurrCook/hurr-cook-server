@@ -28,7 +28,7 @@ public class Recipe extends BaseSchema {
     @Column(nullable = false)
     String time;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     String image;
 
     @ElementCollection
