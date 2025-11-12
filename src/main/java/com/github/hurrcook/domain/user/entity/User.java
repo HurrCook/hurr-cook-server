@@ -32,4 +32,7 @@ public class User extends BaseSchema {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<Ingredient> ingredients;
+
+    //개인 프롬프트
+    String personalPreference;
 }
