@@ -1,5 +1,6 @@
 package com.github.hurrcook.domain.user.service;
 
+import com.github.hurrcook.domain.user.dto.response.PreferenceResponse;
 import com.github.hurrcook.domain.user.entity.User;
 import com.github.hurrcook.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,5 +16,12 @@ public class UserService {
 
         user.setPersonalPreference(personalPreference);
         userRepository.save(user);
+    }
+
+    public PreferenceResponse getPersonalPreference(User user) {
+
+        return PreferenceResponse.builder()
+                .personalPreference(user.getPersonalPreference())
+                .build();
     }
 }
