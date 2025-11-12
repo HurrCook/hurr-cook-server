@@ -32,6 +32,7 @@ public class ChatService {
 
         RecipeRequest recipeRequest = RecipeRequest.builder()
                 .user_query(promptRequest.getMessage())
+                .personal_preferences(user.getPersonalPreference())
                 .ingredients(currentUser.getIngredients().stream().map(IngredientItem::from).toList())
                 .tools(cookware.getAvailableToolNames())
                 .build();
