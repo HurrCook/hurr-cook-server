@@ -27,6 +27,7 @@ public class Ingredient extends BaseSchema {
     @Column(nullable = false)
     int amount;
 
+    @Column(columnDefinition = "TEXT")
     String imageUrl;
 
     @Column(nullable = false)
