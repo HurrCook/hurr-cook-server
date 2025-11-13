@@ -1,5 +1,6 @@
 package com.github.hurrcook.domain.chat.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.hurrcook.domain.chat.dto.request.ImageRequest;
 import com.github.hurrcook.domain.chat.dto.request.IngredientItem;
 import com.github.hurrcook.domain.chat.dto.request.PromptRequest;
@@ -13,12 +14,14 @@ import com.github.hurrcook.domain.user.repository.UserRepository;
 import com.github.hurrcook.global.exception.ApiException;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ChatService {
     private final WebClient webClient;
@@ -36,6 +39,13 @@ public class ChatService {
                 .ingredients(currentUser.getIngredients().stream().map(IngredientItem::from).toList())
                 .tools(cookware.getAvailableToolNames())
                 .build();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(recipeRequest);
+            log.info("📤 전송될 JSON: {}", json);
+        } catch (Exception e) {
+            log.error("JSON 직렬화 실패", e);
+        }
 
         try {
             LlmResponse response = webClient.post()
