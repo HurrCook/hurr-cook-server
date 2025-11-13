@@ -32,6 +32,7 @@ public class ChatService {
 
         User currentUser = userRepository.findByIdWithIngredients(user.getId());
         Cookware cookware = currentUser.getCookware();
+        log.info(promptRequest.getMessage());
 
         RecipeRequest recipeRequest = RecipeRequest.builder()
                 .user_query(promptRequest.getMessage())
