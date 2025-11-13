@@ -43,6 +43,7 @@ public class RecipeService {
         recipe.setTitle(request.getTitle());
         recipe.getSteps().clear();
         recipe.setSteps(request.getSteps());
+        recipe.setImage(request.getImageUrl());
 
 
         request.getIngredients().forEach(ing -> recipeFoodRepository.findById(ing.getId()).ifPresent(recipeFood -> recipeFood.setAmount(ing.getAmount())));
