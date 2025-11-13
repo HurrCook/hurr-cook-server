@@ -20,5 +20,8 @@ public class ModifyRecipeRequest {
     @Schema(description = "레시피 내용")
     List<String> steps;
 
+    @Schema(description = "레시피 이미지")
+    String image;
+
 
 }
