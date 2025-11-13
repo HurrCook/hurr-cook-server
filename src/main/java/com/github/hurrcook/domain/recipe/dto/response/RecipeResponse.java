@@ -24,12 +24,16 @@ public class RecipeResponse {
     @Schema(description = "이미지 url")
     String image;
 
+    @Schema(description = "레시피 소요 시간")
+    String time;
+
     public static RecipeResponse from(Recipe recipe) {
         return RecipeResponse.of(
                 recipe.getTitle(),
                 recipe.getIngredients().stream().map(RecipeIngredientResponse::from).toList(),
                 recipe.getSteps(),
-                recipe.getImage()
+                recipe.getImage(),
+                recipe.getTime()
         );
     }
 }
