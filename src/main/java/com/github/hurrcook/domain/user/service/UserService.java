@@ -24,4 +24,9 @@ public class UserService {
                 .personalPreference(user.getPersonalPreference())
                 .build();
     }
+
+    public void deleteUser(User user) {
+        
+        userRepository.deleteById(user.getId());
+    }
 }

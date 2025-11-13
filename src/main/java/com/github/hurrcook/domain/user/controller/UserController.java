@@ -8,6 +8,7 @@ import com.github.hurrcook.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +25,7 @@ public class UserController {
     @Operation(summary = "개인 맞춤 설정 하기")
     @PostMapping
     public ApiResponse<Void> setPersonalPreference(@AuthenticationPrincipal User user, @RequestBody
-                                                   SetPreferenceRequest request) {
+    SetPreferenceRequest request) {
 
         userService.setPersonalPreference(user, request.getPersonalPreference());
         return ApiResponse.ok();
@@ -37,6 +38,14 @@ public class UserController {
         PreferenceResponse personalPreference = userService.getPersonalPreference(user);
 
         return ApiResponse.ok(personalPreference);
+    }
+
+    @DeleteMapping
+    @Operation(summary = "회원 삭제")
+    public ApiResponse<Void> withdrawUser(@AuthenticationPrincipal User user) {
+
+        userService.deleteUser(user);
+        return ApiResponse.ok();
     }
 
 }
